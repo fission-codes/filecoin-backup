@@ -2,6 +2,12 @@
 # Created by https://www.gitignore.io/api/elm,vim,node,xcode,ocaml,linux,macos,emacs,elixir,phoenix,windows,haskell,reasonml,reactnative,sublimetext,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=elm,vim,node,xcode,ocaml,linux,macos,emacs,elixir,phoenix,windows,haskell,reasonml,reactnative,sublimetext,visualstudio,visualstudiocode
 
+### Sapper ###
+/__sapper__/
+
+### VSCode ###
+.vscode/
+
 ### Elixir ###
 /_build
 /cover
