@@ -1,0 +1,3 @@
+ignore: []
+url: ancient-round-crab.fission.app
+build: ./__sapper__/export
