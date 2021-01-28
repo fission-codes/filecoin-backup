@@ -1,6 +1,6 @@
 {
-  "name": "TODO",
-  "description": "TODO",
+  "name": "filecoin-backup",
+  "description": "A backup app for storing files with webnative and filecoin",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
