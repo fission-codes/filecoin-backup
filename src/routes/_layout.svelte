@@ -1,22 +1,30 @@
 <script lang="ts">
-	import Nav from '../components/Nav.svelte';
+  export let segment = undefined;
 
-	export let segment: string;
+  import {
+    Content,
+    Breadcrumb,
+    BreadcrumbItem,
+    Grid,
+    Row,
+    Column,
+    Tabs,
+    TabContent,
+    Tab,
+    Select,
+    SelectItem
+  } from 'carbon-components-svelte';
+  import Header from '../components/Header.svelte';
+  import Theme from '../components/Theme.svelte';
+
+  let theme: 'g10' = 'g10';
 </script>
 
-<style>
-	main {
-		position: relative;
-		max-width: 56em;
-		background-color: white;
-		padding: 2em;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-</style>
-
-<Nav {segment}/>
-
-<main>
-	<slot></slot>
-</main>
+<Theme persist bind:theme>
+  <Header {segment} />
+  <Content style="background: none; padding: 1rem">
+    <Grid>
+      <slot />
+    </Grid>
+  </Content>
+</Theme>

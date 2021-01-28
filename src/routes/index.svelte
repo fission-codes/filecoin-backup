@@ -1,50 +1,74 @@
-<script>
-	import successkid from 'images/successkid.jpg';
+<script lang="ts">
+  import {
+    Content,
+    Grid,
+    Row,
+    Column,
+    Tabs,
+    TabContent,
+    Tab,
+    Select,
+    SelectItem
+  } from 'carbon-components-svelte';
+
+  import { getContext } from 'svelte';
+
+  const { carbon_theme } = getContext('Theme');
 </script>
 
-<style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
+<Row>
+  <Column lg={16}>
+    <h1 style="margin-bottom: 1.5rem">
+      Store Files with Filecoin &amp Fission
+    </h1>
+  </Column>
+</Row>
 
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
-
-	p {
-		margin: 1em auto;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
-</style>
-
-<svelte:head>
-	<title>Sapper project template</title>
-</svelte:head>
-
-<h1>Great success!</h1>
-
-<figure>
-	<img alt="Success Kid" src="{successkid}">
-	<figcaption>Have fun with Sapper!</figcaption>
-</figure>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+<Row>
+  <Column noGutter>
+    <Tabs aria-label="Tab navigation">
+      <Tab label="About" />
+      <Tab label="Balances" />
+      <Tab label="Files" />
+      <div slot="content" class="tabbed-content">
+        <Grid as fullWidth let:props>
+          <TabContent {...props}>
+            <Row>
+              <Column md={4} lg={7}>
+                <Select
+                  labelText="Theme"
+                  bind:selected={$carbon_theme}
+                  style="margin-bottom: 1rem"
+                >
+                  <SelectItem value="white" text="White" />
+                  <SelectItem value="g10" text="Gray 10" />
+                  <SelectItem value="g90" text="Gray 90" />
+                  <SelectItem value="g100" text="Gray 100" />
+                </Select>
+                <p>
+                  Filecoin Backup App integrates Fission webnative and Filecoin
+                  to store your files in the browser and to the Filecoin
+                  network.
+                </p>
+              </Column>
+            </Row>
+          </TabContent>
+          <TabContent {...props}>
+            <Row>
+              <Column md={4} lg={7}>
+                <p>Filecoin and Lotus provider wallet balances go here.</p>
+              </Column>
+            </Row>
+          </TabContent>
+          <TabContent {...props}>
+            <Row>
+              <Column md={4} lg={7}>
+                <p>Webnative and Filecoin backups go here.</p>
+              </Column>
+            </Row>
+          </TabContent>
+        </Grid>
+      </div>
+    </Tabs>
+  </Column>
+</Row>
