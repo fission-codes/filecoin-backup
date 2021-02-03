@@ -1,0 +1,13 @@
+{
+  "name": "webnative-filecoin",
+  "version": "0.1.0",
+  "description": "webnative SDK for interacting with Filecoin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "webnative": "^0.21.3"
+  }
+}
