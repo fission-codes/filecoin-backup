@@ -18,7 +18,7 @@ import { Permissions } from './ucan/permissions';
 // and the user only has to think about webnative-filecoin
 // I welcome better ideas, but will just for now assume such an "embedded model".
 
-
+// TODO: Authorized State should also have optional keychain, next to fs
 
 export async function initialise(
   options: {
@@ -31,3 +31,7 @@ export async function initialise(
   }): Promise<wnCore.State> {
 
 };
+
+
+// Question (ben 3-feb): does data management follow under keychain?
+// I havent thought much about this encapsulation
