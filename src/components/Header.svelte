@@ -5,7 +5,9 @@
     SkipToContent,
     Header,
     HeaderUtilities,
-    HeaderGlobalAction
+    HeaderGlobalAction,
+    HeaderNav,
+    HeaderNavItem
   } from 'carbon-components-svelte';
   import Notification20 from 'carbon-icons-svelte/lib/Notification20';
   import UserAvatar20 from 'carbon-icons-svelte/lib/UserAvatar20';
@@ -29,6 +31,10 @@
   <div slot="skip-to-content">
     <SkipToContent />
   </div>
+  <HeaderNav>
+    <HeaderNavItem href="/balances" text="Balances" />
+    <HeaderNavItem href="/files" text="Files" />
+  </HeaderNav>
   <HeaderUtilities>
     <HeaderGlobalAction aria-label="Notifications" icon={Notification20} />
     <HeaderGlobalAction aria-label="User Avatar" icon={UserAvatar20} />
