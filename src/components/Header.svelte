@@ -68,6 +68,10 @@
     column-gap: 0.5rem;
   }
 
+  .balance-indicator > span {
+    color: #ffffff;
+  }
+
   .logo {
     display: inline-block;
     width: 1.5rem;
