@@ -56,8 +56,8 @@
     <SkipToContent />
   </div>
   <HeaderNav>
-    <HeaderNavItem href="/balances" text="Balances" />
-    <HeaderNavItem href="/files" text="Files" />
+    <HeaderNavItem href="/transactions" text="Transactions" />
+    <HeaderNavItem href="/backups" text="Backups" />
   </HeaderNav>
   {#if session.authed}
     <HeaderUtilities>

@@ -81,7 +81,7 @@
       style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
     >
       <div class="card">
-        <h2>Balances</h2>
+        <h2>Transactions</h2>
         <p>Explanation of Filecoin wallet and Lotus provider goes here.</p>
         <p>
           A button linking to the balances page goes here. Funds are deposited
@@ -97,7 +97,7 @@
       style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
     >
       <div class="card">
-        <h2>Files</h2>
+        <h2>Backups</h2>
         <p>
           Explanation of webnative hot storage and Filecoin backups go here.
         </p>
