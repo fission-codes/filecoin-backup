@@ -1,15 +1,11 @@
 <script lang="ts">
-  export let segment = undefined;
-
   import {
     SkipToContent,
     Header,
     HeaderUtilities,
-    HeaderGlobalAction
+    HeaderNav,
+    HeaderNavItem
   } from 'carbon-components-svelte';
-  import Notification20 from 'carbon-icons-svelte/lib/Notification20';
-  import UserAvatar20 from 'carbon-icons-svelte/lib/UserAvatar20';
-  import AppSwitcher20 from 'carbon-icons-svelte/lib/AppSwitcher20';
   import { getContext } from 'svelte';
 
   const ctx: { dark: any; light: any; updateVar: any } = getContext('Theme');
@@ -29,9 +25,54 @@
   <div slot="skip-to-content">
     <SkipToContent />
   </div>
+  <HeaderNav>
+    <HeaderNavItem href="/balances" text="Balances" />
+    <HeaderNavItem href="/files" text="Files" />
+  </HeaderNav>
   <HeaderUtilities>
-    <HeaderGlobalAction aria-label="Notifications" icon={Notification20} />
-    <HeaderGlobalAction aria-label="User Avatar" icon={UserAvatar20} />
-    <HeaderGlobalAction aria-label="App Switcher" icon={AppSwitcher20} />
+    <div class="balances">
+      <div class="balance-indicator">
+        <img
+          class="logo"
+          src="/filecoin-logo.svg"
+          alt="Filecoin wallet balance"
+        />
+        <span>10.0 FIL</span>
+      </div>
+      <div class="balance-indicator">
+        <img
+          class="logo"
+          src="/filecoin-symbol-color.svg"
+          alt="Lotus provider balance"
+        />
+        <span>250.3 FIL</span>
+      </div>
+    </div>
   </HeaderUtilities>
 </Header>
+
+<style>
+  .balances {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .balance-indicator {
+    display: grid;
+    place-items: center center;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+  }
+
+  .balance-indicator > span {
+    color: #ffffff;
+  }
+
+  .logo {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+</style>
