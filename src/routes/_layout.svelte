@@ -1,6 +1,4 @@
 <script lang="ts">
-  export let segment = undefined;
-
   import { onMount } from 'svelte';
   import { Content, Grid } from 'carbon-components-svelte';
   import Header from '../components/Header.svelte';
@@ -15,7 +13,7 @@
 </script>
 
 <Theme persist bind:theme>
-  <Header {segment} />
+  <Header />
   <Content style="background: none; padding: 1rem; height: calc(100vh - 4rem)">
     <Grid style="height: 100%">
       <slot />

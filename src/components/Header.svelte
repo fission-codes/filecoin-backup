@@ -1,6 +1,4 @@
 <script lang="ts">
-  export let segment = undefined;
-
   import {
     SkipToContent,
     Header,
