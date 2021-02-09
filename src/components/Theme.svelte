@@ -9,8 +9,8 @@
   import { onMount, afterUpdate, setContext } from 'svelte';
   import { writable, derived } from 'svelte/store';
 
-  const isValidTheme = value => themes.includes(value);
-  const isDark = value =>
+  const isValidTheme = (value: Theme) => themes.includes(value);
+  const isDark = (value: Theme) =>
     isValidTheme(value) && (value === 'g90' || value === 'g100');
 
   const carbon_theme = writable(theme);
@@ -21,7 +21,7 @@
     theme = value;
   });
 
-  let _document = null;
+  let _document: Document | null = null;
 
   setContext('Theme', {
     updateVar: (name: string, value: string) => {
@@ -40,7 +40,7 @@
     try {
       const persisted_theme = localStorage.getItem(persistKey);
 
-      if (isValidTheme(persisted_theme)) {
+      if (isValidTheme(persisted_theme as Theme)) {
         theme = persisted_theme as Theme;
       }
     } catch (error) {

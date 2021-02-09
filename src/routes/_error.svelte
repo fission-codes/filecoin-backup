@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let status;
-  export let error;
+  export let status: number;
+  export let error: { message: any; stack: any };
 
   import { Row, Column, Link } from 'carbon-components-svelte';
 
