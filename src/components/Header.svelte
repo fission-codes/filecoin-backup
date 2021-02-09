@@ -6,7 +6,11 @@
     HeaderNav,
     HeaderNavItem
   } from 'carbon-components-svelte';
-  import { getContext } from 'svelte';
+  import { getContext, onMount, onDestroy } from 'svelte';
+
+  /**
+   * Carbon theme initialization.
+   */
 
   const ctx: { dark: any; light: any; updateVar: any } = getContext('Theme');
 
@@ -19,6 +23,32 @@
     });
     ctx.updateVar('--cds-productive-heading-06-font-size', '4rem');
   }
+
+  /**
+   * Webnative initialization. In order to avoid running webnative on the
+   * server, we initialize webnative inside onMount. Default values are
+   * provided to avoid server-side errors. We update them as soon as we can
+   * on the client.
+   */
+
+  let session = {
+    username: '',
+    errorMessage: '',
+    authed: false,
+    loading: true,
+    error: false
+  };
+  let unsubscribe: VoidFunction = () => {};
+
+  onMount(async () => {
+    const { sessionStore } = await import('../webnative');
+
+    unsubscribe = sessionStore.subscribe(val => {
+      session = val;
+    });
+  });
+
+  onDestroy(unsubscribe);
 </script>
 
 <Header company="Fission" platformName="Filecoin Backup" href="/">
@@ -29,44 +59,51 @@
     <HeaderNavItem href="/balances" text="Balances" />
     <HeaderNavItem href="/files" text="Files" />
   </HeaderNav>
-  <HeaderUtilities>
-    <div class="balances">
-      <div class="balance-indicator">
-        <img
-          class="logo"
-          src="/filecoin-logo.svg"
-          alt="Filecoin wallet balance"
-        />
-        <span>10.0 FIL</span>
+  {#if session.authed}
+    <HeaderUtilities>
+      <div class="indicators">
+        <div class="indicator">
+          <img class="logo" src="/icon.png" alt="Fission username" />
+          <span>{session.username}</span>
+        </div>
+        <div class="indicator">
+          <img
+            class="logo"
+            src="/filecoin-logo.svg"
+            alt="Filecoin wallet balance"
+          />
+          <span>10.0 FIL</span>
+        </div>
+        <div class="indicator">
+          <img
+            class="logo"
+            src="/filecoin-symbol-color.svg"
+            alt="Lotus provider balance"
+          />
+          <span>250.3 FIL</span>
+        </div>
       </div>
-      <div class="balance-indicator">
-        <img
-          class="logo"
-          src="/filecoin-symbol-color.svg"
-          alt="Lotus provider balance"
-        />
-        <span>250.3 FIL</span>
-      </div>
-    </div>
-  </HeaderUtilities>
+    </HeaderUtilities>
+  {/if}
 </Header>
 
 <style>
-  .balances {
+  .indicators {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 1fr 1fr;
+    place-items: center right;
     column-gap: 1.5rem;
     padding: 0 1rem;
   }
 
-  .balance-indicator {
+  .indicator {
     display: grid;
-    place-items: center center;
+    place-items: center left;
     grid-template-columns: auto 1fr;
     column-gap: 0.5rem;
   }
 
-  .balance-indicator > span {
+  .indicator > span {
     color: #ffffff;
   }
 

@@ -9,7 +9,18 @@
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
 
+  /**
+   * Carbon theme initialization.
+   */
+
   const { carbon_theme } = getContext('Theme');
+
+  /**
+   * Webnative initialization. In order to avoid running webnative on the
+   * server, we initialize webnative inside onMount. Default values are
+   * provided to avoid server-side errors. We update them as soon as we can
+   * on the client.
+   */
 
   let session = {
     username: '',
