@@ -8,6 +8,8 @@
     Loading
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
+  import type { Post } from '../feed';
+  import { getPosts } from '../feed';
 
   /**
    * Carbon theme initialization.
@@ -32,6 +34,8 @@
   let login: VoidFunction;
   let unsubscribe: VoidFunction = () => {};
 
+  let postsPromise: Promise<Post[]>;
+
   onMount(async () => {
     const { redirectToLobby, sessionStore } = await import('../webnative');
     login = redirectToLobby;
@@ -39,6 +43,8 @@
     unsubscribe = sessionStore.subscribe(val => {
       session = val;
     });
+
+    postsPromise = getPosts();
   });
 
   onDestroy(unsubscribe);
@@ -113,6 +119,15 @@
       <div class="card">
         <h2>Community</h2>
         <p>A bunch of social and community links go here.</p>
+        {#await postsPromise then posts}
+          {#each posts as post}
+            <a href={post.url} target="_blank">
+              {post.title}
+            </a>
+          {/each}
+        {:catch error}
+          {error.message}
+        {/await}
       </div>
     </Column>
   </Row>
