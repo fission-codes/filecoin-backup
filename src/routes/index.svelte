@@ -59,7 +59,7 @@
         <h2>Welcome</h2>
         <p>
           Filecoin Backup App integrates Fission webnative and Filecoin to store
-          your files in the browser and to the Filecoin network.
+          your files in the browser and on the Filecoin network.
         </p>
         <h4>Select a Theme</h4>
         <Select
@@ -84,8 +84,8 @@
         <h2>Transactions</h2>
         <p>Explanation of Filecoin wallet and Lotus provider goes here.</p>
         <p>
-          A button linking to the balances page goes here. Funds are deposited
-          and transfered on this page.
+          A button linking to the transactions page goes here. Funds are
+          deposited and transfered on this page.
         </p>
       </div>
     </Column>
@@ -101,7 +101,7 @@
         <p>
           Explanation of webnative hot storage and Filecoin backups go here.
         </p>
-        <p>A button linking to the files page goes here.</p>
+        <p>A button linking to the backups page goes here.</p>
       </div>
     </Column>
 
@@ -143,14 +143,12 @@
   .error {
     display: grid;
     place-items: center center;
-
     height: 100%;
   }
 
   .welcome {
     display: grid;
     row-gap: 1rem;
-
     padding-top: 2rem;
   }
 
