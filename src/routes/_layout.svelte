@@ -3,6 +3,7 @@
   import { Content, Grid } from 'carbon-components-svelte';
   import Header from '../components/Header.svelte';
   import Theme from '../components/Theme.svelte';
+  import SvelteSeo from 'svelte-seo';
 
   let theme: 'g10' = 'g10';
 
@@ -11,6 +12,34 @@
     initialize();
   });
 </script>
+
+<SvelteSeo
+  title="Filecoin Backup App"
+  description="An app for storing files with webnative and filecoin."
+  openGraph={{
+    title: 'Filecoin Backup App',
+    description:
+      'An app for storing files with webnative and filecoin. Read about it at https://talk.fission.codes/',
+    url: 'https://ancient-round-crab.fission.app/',
+    type: 'website',
+    images: [
+      {
+        url: 'https://ancient-round-crab.fission.app/crab.png',
+        width: 640,
+        height: 377,
+        alt: 'Ancient round crab icon'
+      }
+    ]
+  }}
+  twitter={{
+    site: '@FISSIONcodes',
+    title: 'Filecoin Backup App',
+    description:
+      'An app for storing files with webnative and filecoin. Read about it at https://talk.fission.codes/',
+    image: 'https://ancient-round-crab.fission.app/crab.png',
+    imageAlt: 'Ancient round crab icon'
+  }}
+/>
 
 <Theme persist bind:theme>
   <Header />
