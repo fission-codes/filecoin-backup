@@ -143,7 +143,7 @@
   .error {
     display: grid;
     place-items: center center;
-    height: 100%;
+    height: calc(100vh - 4rem);
   }
 
   .welcome {
