@@ -1,4 +1,3 @@
-// import Address from '../filecoin/address';
 import { FileSystem } from 'webnative/fs/filesystem'
 
 // API (for phase 2 stuff)
@@ -10,6 +9,11 @@ import { FileSystem } from 'webnative/fs/filesystem'
 // - Balances
 //   + Wallet in app
 //   + Wallet managed by Lotus node
+// 
+// keychain
+// UCANs
+// lotus node
+
 
 export enum Network {
   Main = 'f',
@@ -17,10 +21,12 @@ export enum Network {
 };
 
 export type BalanceStatement = {
-  balances: { [address: string]: number }
-  blockheight: number;
-  network: Network;
+  balance: number
+  blockheight: number
+  network: Network
 }
+
+export type Balances = { [address: string]: number }
 
 export class NetworkProviderError extends Error {};
 export class InvalidRequestError extends Error {};
@@ -56,22 +62,21 @@ export class Keychain {
     ]
   };
 
-  // does perform an active network request to get the latest balances
-  async getBalances(filter?: string): Promise<BalanceStatement> {
+  async getBalance(address: string): Promise<number> {
+    return 2000
+  }
+
+  async getBalances(): Promise<{ [address: string]: number }> {
     return {
-      balances: {
         t3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa: 2000,
         t3wgxspnbaktqwk4fnruxzsne4cdu6olopflsowk7fvux6c5vxcxnwhoaimxpgtwc4q6gf27fzsik6axvjaugq: 1000
-      },
-      blockheight: 311003,
-      network: Network.Test,
-    }
+      }
   }
 
   async transfer(
     from: Address, // must be an address active in this keychain
     to: Address,   // can be any address on the same network
-    amount: bigint // as integer in attoFIL = 10^(-18) FIL
+    amount: number // as integer in attoFIL = 10^(-18) FIL
   ): Promise<Receipt> {
     return {} 
   }

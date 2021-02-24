@@ -1,5 +1,6 @@
-import * as wnCore from 'webnative';
-import { Permissions } from './ucan/permissions';
+import { FileSystem } from 'webnative/fs/filesystem'
+import Wallet from './wallet';
+import Keychain, { Network } from './keychain';
 
 // Ben's train of thought: (3 feb 2021)
 // discussion: initialisation / setup
@@ -20,18 +21,9 @@ import { Permissions } from './ucan/permissions';
 
 // TODO: Authorized State should also have optional keychain, next to fs
 
-export async function initialise(
-  options: {
-    // Permissions here has additional keychainPaths, which would grant wnfs + keychain ADMIN resource
-    permissions?: Permissions;
-
-    // ... Options (keep same as webnative)
-    autoRemoveUrlParams?: boolean;
-    loadFileSystem?: boolean;
-  }): Promise<wnCore.State> {
-
-};
-
-
-// Question (ben 3-feb): does data management follow under keychain?
-// I havent thought much about this encapsulation
+export const initialise = async (fs: FileSystem): Promise<Wallet> => {
+  const keychain = new Keychain({ fs, network: Network.Test })
+  const personalAddress = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
+  const providerAddress = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
+  return new Wallet({ keychain, personalAddress, providerAddress })
+}
