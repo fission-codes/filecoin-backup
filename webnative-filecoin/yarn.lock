@@ -564,6 +564,11 @@ native-fetch@^2.0.1:
   dependencies:
     globalthis "^1.0.1"
 
+noble-bls12-381@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/noble-bls12-381/-/noble-bls12-381-0.9.0.tgz#1da93c208708963acf594d5d892c561182371e15"
+  integrity sha512-D04HbbvdxcLkRlcl1GAGk1vu0Hoe2ZtfadaFfL6CqW4mFV890magfIh0duzmb9yaB2BH21e+KmZc5HXjQe9sQw==
+
 node-addon-api@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.2.tgz#432cfa82962ce494b132e9d72a15b29f71ff5d32"
