@@ -30,27 +30,45 @@ export type Balances = { [address: string]: number }
 export class NetworkProviderError extends Error {};
 export class InvalidRequestError extends Error {};
 
-export class Receipt {};
+export type Receipt = {
+  from: Address
+  to: Address
+  amount: number
+  time: number
+  blockheight: number
+}
 
 export type Address = string
 
 type ConstructorParams = {
   privKey: string
+  address: string
   providerAddress: string
+  balance: number
+  providerBalance: number
+  receipts: Receipt[]
 }
 
 export default class Wallet {
 
   private privKey: string
+  address: string
   providerAddress: string
+  balance: number
+  providerBalance: number
+  receipts: Receipt[]
 
-  constructor({ privKey, providerAddress }: ConstructorParams) {
+  constructor({ privKey, address, providerAddress, balance, providerBalance, receipts }: ConstructorParams) {
     this.privKey = privKey
+    this.address = address
     this.providerAddress = providerAddress
+    this.balance = balance
+    this.providerBalance = providerBalance
+    this.receipts = receipts
   }
 
   getAddress(): string {
-    return "t3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa"
+    return this.address
   }
 
   getProviderAddress(): string {
@@ -58,18 +76,31 @@ export default class Wallet {
   }
 
   async getBalance(): Promise<number> {
-    return 200
+    return this.balance
   }
 
   async getProviderBalance(): Promise<number> {
-    return 1500
+    return this.providerBalance
   }
 
   async fundProvider(amount: number):  Promise<Receipt> {
-    return {}
+    if(amount > this.balance) {
+      throw new Error("Insufficient funds")
+    }
+    this.balance -= amount
+    this.providerBalance += amount
+    const receipt = {
+      from: this.address,
+      to: this.providerAddress,
+      amount: amount,
+      time: Date.now(),
+      blockheight: 311330
+    }
+    this.receipts.push(receipt)
+    return receipt 
   }
 
   async getPrevReceipts(): Promise<Receipt[]> {
-    return []
+    return this.receipts
   }
 }
