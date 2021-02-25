@@ -1,6 +1,5 @@
 import { FileSystem } from 'webnative/fs/filesystem'
 import Wallet from './wallet';
-import Keychain, { Network } from './keychain';
 
 // Ben's train of thought: (3 feb 2021)
 // discussion: initialisation / setup
@@ -22,8 +21,7 @@ import Keychain, { Network } from './keychain';
 // TODO: Authorized State should also have optional keychain, next to fs
 
 export const initialise = async (fs: FileSystem): Promise<Wallet> => {
-  const keychain = new Keychain({ fs, network: Network.Test })
-  const personalAddress = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
+  const privKey = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
   const providerAddress = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
-  return new Wallet({ keychain, personalAddress, providerAddress })
+  return new Wallet({ privKey, providerAddress })
 }

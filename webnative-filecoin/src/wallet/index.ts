@@ -1,39 +1,64 @@
-import Keychain, { Address, Balances, BalanceStatement, Receipt } from '../keychain'
+// API (for phase 2 stuff)
+// -----------------------
+// - Get Wallet
+// - Send
+//   + From wallet to lotus node
+//   + Probably just amount and address of wallet managed by Lotus node?
+// - Balances
+//   + Wallet in app
+//   + Wallet managed by Lotus node
+// 
+// Parts:
+// keychain
+// UCANs
+// lotus node
+
+
+export enum Network {
+  Main = 'f',
+  Nerpa = 't',
+};
+
+export type BalanceStatement = {
+  balance: number
+  blockheight: number
+  network: Network
+}
+
+export type Balances = { [address: string]: number }
+
+export class NetworkProviderError extends Error {};
+export class InvalidRequestError extends Error {};
+
+export class Receipt {};
+
+export type Address = string
 
 type ConstructorParams = {
-  personalAddress: string
+  privKey: string
   providerAddress: string
-  keychain: Keychain
 }
 
 export default class Wallet {
 
-  personalAddress: string
+  private privKey: string
   providerAddress: string
-  keychain: Keychain
 
-  constructor({ personalAddress, providerAddress, keychain }: ConstructorParams) {
-    this.personalAddress = personalAddress
+  constructor({ privKey, providerAddress }: ConstructorParams) {
+    this.privKey = privKey
     this.providerAddress = providerAddress
-    this.keychain = keychain
   }
 
-  getPersonalAddress(): string {
-    return this.personalAddress
+  getAddress(): string {
+    return "t3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa"
   }
 
   getProviderAddress(): string {
     return this.providerAddress
   }
 
-  async getWalletBalances(): Promise<Balances> {
-    return this.keychain.getBalances()
-  }
-
-  async getTotalWalletBalance(): Promise<number> {
-    const statement = await this.getWalletBalances()
-    return Object.values(statement.balances)
-      .reduce((acc, cur) => acc + cur)
+  async getBalance(): Promise<number> {
+    return 200
   }
 
   async getProviderBalance(): Promise<number> {
@@ -41,7 +66,7 @@ export default class Wallet {
   }
 
   async fundProvider(amount: number):  Promise<Receipt> {
-    return this.keychain.transfer(this.personalAddress, this.providerAddress, amount)
+    return {}
   }
 
   async getPrevReceipts(): Promise<Receipt[]> {
