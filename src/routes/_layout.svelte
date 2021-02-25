@@ -50,6 +50,7 @@
         <slot />
       </Grid>
     </Content>
+    <Footer />
   </Theme>
 </div>
 
