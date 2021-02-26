@@ -1,7 +1,7 @@
 import { FileSystem } from 'webnative/fs/filesystem'
 import Wallet from './wallet';
 
-export const initialise = async (fs: FileSystem): Promise<Wallet> => {
+export const getWallet = async (fs: FileSystem): Promise<Wallet> => {
   const privKey = 'privKey'
   const address = 't3q5cgdg2b6uzazz7sbkdjqoafxzvuagbawh76wamwazupvvwzol7glitxs4e2j2wd5ncsg2mltrdt2t6gdisa'
   const providerAddress = 't1golw5yofvrksvnlxtiayovr7ptthae6n54ah6na'
