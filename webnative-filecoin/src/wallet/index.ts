@@ -18,18 +18,6 @@ export enum Network {
   Main = 'f',
   Nerpa = 't',
 };
-
-export type BalanceStatement = {
-  balance: number
-  blockheight: number
-  network: Network
-}
-
-export type Balances = { [address: string]: number }
-
-export class NetworkProviderError extends Error {};
-export class InvalidRequestError extends Error {};
-
 export type Receipt = {
   from: Address
   to: Address
