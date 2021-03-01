@@ -3,6 +3,7 @@
   import { Content, Grid } from 'carbon-components-svelte';
   import Header from '../components/Header.svelte';
   import Theme from '../components/Theme.svelte';
+  import Footer from '../components/Footer.svelte';
   import SvelteSeo from 'svelte-seo';
 
   let theme: 'g10' = 'g10';
@@ -41,11 +42,22 @@
   }}
 />
 
-<Theme persist bind:theme>
-  <Header />
-  <Content style="background: none; padding: 1rem; height: calc(100vh - 4rem)">
-    <Grid style="height: 100%">
-      <slot />
-    </Grid>
-  </Content>
-</Theme>
+<div id="layout">
+  <Theme persist bind:theme>
+    <Header />
+    <Content style="background: none; padding: 1rem;">
+      <Grid style="height: 100%">
+        <slot />
+      </Grid>
+    </Content>
+    <Footer />
+  </Theme>
+</div>
+
+<style>
+  #layout {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+</style>

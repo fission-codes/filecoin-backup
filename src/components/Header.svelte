@@ -62,11 +62,11 @@
   {#if session.authed}
     <HeaderUtilities>
       <div class="indicators">
-        <div class="indicator">
+        <div class="fission-indicator">
           <img class="logo" src="/icon.png" alt="Fission username" />
           <span>{session.username}</span>
         </div>
-        <div class="indicator">
+        <div class="filecoin-indicator">
           <img
             class="logo"
             src="/filecoin-logo.svg"
@@ -74,7 +74,7 @@
           />
           <span>10.0 FIL</span>
         </div>
-        <div class="indicator">
+        <div class="filecoin-indicator">
           <img
             class="logo"
             src="/filecoin-symbol-color.svg"
@@ -96,14 +96,16 @@
     padding: 0 1rem;
   }
 
-  .indicator {
+  .fission-indicator,
+  .filecoin-indicator {
     display: grid;
     place-items: center left;
     grid-template-columns: auto 1fr;
     column-gap: 0.5rem;
   }
 
-  .indicator > span {
+  .fission-indicator > span,
+  .filecoin-indicator > span {
     color: #ffffff;
   }
 
@@ -111,5 +113,15 @@
     display: inline-block;
     width: 1.5rem;
     height: 1.5rem;
+  }
+
+  @media (max-width: 671px) {
+    .indicators {
+      grid-template-columns: 1fr;
+    }
+
+    .filecoin-indicator {
+      display: none;
+    }
   }
 </style>
