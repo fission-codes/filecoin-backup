@@ -10,9 +10,12 @@
     "validate": "svelte-check --ignore src/node_modules/@sapper"
   },
   "dependencies": {
+    "clipboard-copy": "^4.0.1",
     "compression": "^1.7.1",
     "polka": "next",
-    "sirv": "^1.0.0"
+    "sirv": "^1.0.0",
+    "svelte-seo": "^1.1.0",
+    "webnative": "^0.21.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
