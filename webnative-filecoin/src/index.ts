@@ -1,4 +1,4 @@
-import { FileSystem } from 'webnative/fs/filesystem'
+import type FileSystem from 'webnative/fs'
 import Wallet from './wallet';
 
 export const getWallet = async (fs: FileSystem): Promise<Wallet> => {

@@ -14,8 +14,12 @@
     "compression": "^1.7.1",
     "polka": "next",
     "sirv": "^1.0.0",
+<<<<<<< HEAD
     "svelte-seo": "^1.1.0",
     "webnative": "^0.21.3"
+=======
+    "webnative": "^0.21.4"
+>>>>>>> match webnative versions
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
