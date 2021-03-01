@@ -1,6 +1,7 @@
 import * as webnative from 'webnative';
 import { writable, Writable } from 'svelte/store';
 
+import * as filecoin from '../webnative-filecoin/src/index';
 
 export type Session = {
   username: string;
@@ -31,7 +32,7 @@ const fissionInit = {
 }
 
 export async function initialize() {
-  webnative.initialise(fissionInit).then(st => {
+  webnative.initialise(fissionInit).then(async st => {
     state = st;
 
     switch (state.scenario) {
@@ -55,6 +56,11 @@ export async function initialize() {
           authed: true,
           error: false
         });
+
+        if(state.fs){
+          const wallet = await filecoin.getWallet(state.fs)
+        }
+
         break;
     }
   }).catch(err => {
