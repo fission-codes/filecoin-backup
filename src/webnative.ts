@@ -57,7 +57,9 @@ export async function initialize() {
           error: false
         });
 
-        const wallet = await filecoin.getWallet(state.fs)
+        if(state.fs){
+          const wallet = await filecoin.getWallet(state.fs)
+        }
 
         break;
     }

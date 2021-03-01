@@ -1,13 +1,10 @@
 {
 		"extends": "@tsconfig/svelte/tsconfig.json",
 		"compilerOptions": {
-<<<<<<< HEAD
 			"sourceMap": true,
 			"noImplicitAny": true,
 			"strictNullChecks": true,
-=======
 			"importsNotUsedAsValues": "preserve",
->>>>>>> Add webnative-filecoin to tsconfig includes
 			"lib": ["DOM", "ES2017", "WebWorker"],
 			"target": "ES2015",
 			"typeRoots": [
