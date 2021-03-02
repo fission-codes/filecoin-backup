@@ -111,7 +111,7 @@
 <style>
   .indicators {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: auto auto auto;
     place-items: center right;
     column-gap: 1.5rem;
     padding: 0 1rem;
