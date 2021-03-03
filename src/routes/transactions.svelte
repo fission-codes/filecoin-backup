@@ -119,13 +119,13 @@
                 <h2>Filecoin Wallet</h2>
                 <p>
                   Filecoin Backup is currently running on the
-                  <span class="bold">Nerpa</span> testnet.
+                  <span class="bold">Calibration</span> testnet.
                 </p>
                 <h4>Add Funds</h4>
                 <p>
                   Please visit the
                   <a
-                    href="https://faucet.nerpa.interplanetary.dev/"
+                    href="https://faucet.calibration.fildev.network/"
                     target="_blank"
                   >
                     Lotus Devnet Faucet
