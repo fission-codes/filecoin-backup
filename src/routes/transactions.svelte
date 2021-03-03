@@ -13,8 +13,9 @@
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
+  import type Wallet from '../../webnative-filecoin/src/wallet';
 
-  const wallet = 'f16tugakjopyofmxy7uv2d6wdj7wyyr3ueyfu7w7a';
+  // const wallet = 'f16tugakjopyofmxy7uv2d6wdj7wyyr3ueyfu7w7a';
 
   const headers = [
     { key: 'date', value: 'Date' },
@@ -52,20 +53,30 @@
     loading: true,
     error: false
   };
-  let unsubscribe: VoidFunction = () => {};
+  let wallet: Wallet | undefined;
+
+  let unsubscribeSession: VoidFunction = () => {};
+  let unsubscribeWallet: VoidFunction = () => {};
 
   onMount(async () => {
-    const { sessionStore } = await import('../webnative');
+    const { sessionStore, walletStore } = await import('../webnative');
 
-    unsubscribe = sessionStore.subscribe(val => {
+    unsubscribeSession = sessionStore.subscribe(val => {
       if (!val.loading && !val.authed) {
         goto('/');
       }
       session = val;
     });
+
+    unsubscribeWallet = walletStore.subscribe(val => {
+      wallet = val;
+    });
   });
 
-  onDestroy(unsubscribe);
+  onDestroy(() => {
+    unsubscribeSession();
+    unsubscribeWallet();
+  });
 </script>
 
 {#if session.loading}
@@ -80,7 +91,13 @@
           <Row>
             <Column>
               <div class="balance">
-                <h1 class="balance-value">10.0</h1>
+                {#if wallet !== undefined}
+                  {#await wallet?.getBalance() then balance}
+                    <h1 class="balance-value">{balance}</h1>
+                  {:catch}
+                    <h1 class="balance-value">Error</h1>
+                  {/await}
+                {/if}
                 <div class="balance-label">
                   <img
                     class="logo"
@@ -115,8 +132,14 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
-                <CodeSnippet on:click={() => copy(wallet)}>{wallet}</CodeSnippet
-                >
+                {#if wallet !== undefined}
+                  <CodeSnippet
+                    wrapText
+                    type="multi"
+                    on:click={() => copy(wallet?.getAddress() || '')}
+                    code={wallet?.getAddress() || ''}
+                  />
+                {/if}
                 <h4>Paying for Storage</h4>
                 <p>
                   Before you can make a storage deal, you will want to send some
@@ -139,7 +162,13 @@
           <Row>
             <Column>
               <div class="balance">
-                <h1 class="balance-value">250.3</h1>
+                {#if wallet !== undefined}
+                  {#await wallet?.getProviderBalance() then providerBalance}
+                    <h1 class="balance-value">{providerBalance}</h1>
+                  {:catch}
+                    <h1 class="balance-value">Error</h1>
+                  {/await}
+                {/if}
                 <div class="balance-label">
                   <img
                     class="logo"
