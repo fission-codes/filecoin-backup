@@ -15,8 +15,6 @@
   import copy from 'clipboard-copy';
   import type Wallet from '../../webnative-filecoin/src/wallet';
 
-  // const wallet = 'f16tugakjopyofmxy7uv2d6wdj7wyyr3ueyfu7w7a';
-
   const headers = [
     { key: 'date', value: 'Date' },
     { key: 'amount', value: 'Amount' }
@@ -77,6 +75,14 @@
     unsubscribeSession();
     unsubscribeWallet();
   });
+
+  let sendProviderAmount = 0;
+
+  async function sendProviderFunds() {
+    if (wallet !== undefined) {
+      const receipt = await wallet.fundProvider(sendProviderAmount);
+    }
+  }
 </script>
 
 {#if session.loading}
@@ -136,24 +142,10 @@
                   <CodeSnippet
                     wrapText
                     type="multi"
-                    on:click={() => copy(wallet?.getAddress() || '')}
                     code={wallet?.getAddress() || ''}
+                    on:click={() => copy(wallet?.getAddress() || '')}
                   />
                 {/if}
-                <h4>Paying for Storage</h4>
-                <p>
-                  Before you can make a storage deal, you will want to send some
-                  Filecoin to a Lotus provider. We have configured a Lotus
-                  Provider for you to use. Once the Lotus provider is holding
-                  your funds, you will be ready to start backing up files!
-                </p>
-                <h4>Send Funds to Lotus Provider</h4>
-                <Form on:submit>
-                  <FormGroup>
-                    <NumberInput helperText="Enter the amount of FIL to send" />
-                  </FormGroup>
-                  <Button type="submit">Send Funds</Button>
-                </Form>
               </div>
             </Column>
           </Row>
@@ -189,9 +181,22 @@
               <div class="card">
                 <h2>Lotus Provider</h2>
                 <p>
-                  The <span class="bold">Blossom of Splendor</span> is holding your
-                  FIL. You are ready to backup your files.
+                  Before you can make a storage deal, you will want to send some
+                  Filecoin to a Lotus provider. We have configured a Lotus
+                  Provider for you to use. Once the Lotus provider is holding
+                  your funds, you will be ready to start backing up files!
                 </p>
+                <h4>Send Funds to Lotus Provider</h4>
+                <Form on:submit={sendProviderFunds}>
+                  <FormGroup>
+                    <NumberInput
+                      helperText="Enter the amount of FIL to send"
+                      step={0.01}
+                      bind:value={sendProviderAmount}
+                    />
+                  </FormGroup>
+                  <Button type="submit">Send Funds</Button>
+                </Form>
                 <h4>Transactions</h4>
                 <p>
                   Funds sent from your Filecoin wallet to the Lotus Provider are
