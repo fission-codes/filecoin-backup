@@ -14,6 +14,7 @@
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
   import type Wallet from '../../webnative-filecoin/src/wallet';
+  import type { Receipt } from '../../webnative-filecoin/src/wallet';
 
   const headers = [
     { key: 'date', value: 'Date' },
@@ -52,9 +53,11 @@
     error: false
   };
   let wallet: Wallet | undefined;
+  let transactionMessage: string | undefined;
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
+  let sendProviderFunds: VoidFunction = () => {};
 
   onMount(async () => {
     const { sessionStore, walletStore } = await import('../webnative');
@@ -69,6 +72,20 @@
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
     });
+
+    sendProviderFunds = async () => {
+      if (wallet !== undefined) {
+        wallet
+          .fundProvider(sendProviderAmount)
+          .then((receipt: Receipt) => {
+            walletStore.update(wallet => wallet);
+            transactionMessage = `✅ Sent ${receipt.amount} FIL to Lotus Provider`;
+          })
+          .catch((err: Error) => {
+            transactionMessage = `❌ ${err.message}`;
+          });
+      }
+    };
   });
 
   onDestroy(() => {
@@ -76,13 +93,7 @@
     unsubscribeWallet();
   });
 
-  let sendProviderAmount = 0;
-
-  async function sendProviderFunds() {
-    if (wallet !== undefined) {
-      const receipt = await wallet.fundProvider(sendProviderAmount);
-    }
-  }
+  let sendProviderAmount: number = 0;
 </script>
 
 {#if session.loading}
@@ -197,6 +208,9 @@
                   </FormGroup>
                   <Button type="submit">Send Funds</Button>
                 </Form>
+                {#if transactionMessage !== undefined}
+                  <span>{transactionMessage}</span>
+                {/if}
                 <h4>Transactions</h4>
                 <p>
                   Funds sent from your Filecoin wallet to the Lotus Provider are
