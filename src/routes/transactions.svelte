@@ -16,12 +16,12 @@
   import type Wallet from '../../webnative-filecoin/src/wallet';
   import type { Receipt } from '../../webnative-filecoin/src/wallet';
 
-  const headers = [
+  const transactionHeaders = [
     { key: 'date', value: 'Date' },
     { key: 'amount', value: 'Amount' }
   ];
 
-  const placeholderRows = [
+  let transactions = [
     {
       id: 'a',
       date: '02/03/2021',
@@ -38,6 +38,17 @@
       amount: '90.5'
     }
   ];
+
+  type TransactionStatus = {
+    status: 'in-progress' | 'complete' | 'error' | null;
+    message: string;
+  };
+
+  let providerTransactionStatus: TransactionStatus = {
+    status: null,
+    message: ''
+  };
+
   /**
    * Webnative initialization. In order to avoid running webnative on the
    * server, we initialize webnative inside onMount. Default values are
@@ -53,7 +64,6 @@
     error: false
   };
   let wallet: Wallet | undefined;
-  let transactionMessage: string | undefined;
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
@@ -73,16 +83,43 @@
       wallet = val;
     });
 
+    if (wallet !== undefined) {
+      wallet.getPrevReceipts().then(receipts => {
+        receipts.forEach(receipt => {
+          transactions.push({
+            id: String(receipt.blockheight),
+            date: new Date(receipt.time).toLocaleString('en-ca'),
+            amount: String(receipt.amount)
+          });
+        });
+      });
+    }
+
     sendProviderFunds = async () => {
       if (wallet !== undefined) {
+        providerTransactionStatus = {
+          status: 'in-progress',
+          message: ' Sending funds to Lotus Provider'
+        };
         wallet
           .fundProvider(sendProviderAmount)
-          .then((receipt: Receipt) => {
+          .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
-            transactionMessage = `✅ Sent ${receipt.amount} FIL to Lotus Provider`;
+            providerTransactionStatus = {
+              status: 'complete',
+              message: `✅ Sent ${receipt.amount} FIL to Lotus Provider`
+            };
+            transactions.push({
+              id: String(receipt.blockheight),
+              date: new Date(receipt.time).toLocaleString('en-ca'),
+              amount: String(receipt.amount)
+            });
           })
           .catch((err: Error) => {
-            transactionMessage = `❌ ${err.message}`;
+            providerTransactionStatus = {
+              status: 'error',
+              message: `❌ ${err.message}`
+            };
           });
       }
     };
@@ -149,6 +186,7 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
+
                 {#if wallet !== undefined}
                   <CodeSnippet
                     wrapText
@@ -208,8 +246,12 @@
                   </FormGroup>
                   <Button type="submit">Send Funds</Button>
                 </Form>
-                {#if transactionMessage !== undefined}
-                  <span>{transactionMessage}</span>
+                {#if providerTransactionStatus.status === 'in-progress'}
+                  <span class="sending-funds">
+                    {providerTransactionStatus.message}
+                  </span>
+                {:else}
+                  <span>{providerTransactionStatus.message}</span>
                 {/if}
                 <h4>Transactions</h4>
                 <p>
@@ -217,7 +259,7 @@
                   listed here. Check the backups page for a listing of storage
                   deals.
                 </p>
-                <DataTable {headers} rows={placeholderRows} />
+                <DataTable headers={transactionHeaders} rows={transactions} />
               </div>
             </Column>
           </Row>
@@ -264,5 +306,28 @@
 
   .bold {
     font-weight: bold;
+  }
+
+  .sending-funds {
+    display: inline-block;
+    overflow: hidden;
+    height: 1.3em;
+    margin-top: -0.3em;
+    line-height: 1.5em;
+    vertical-align: text-bottom;
+  }
+
+  .sending-funds::before {
+    display: inline-table;
+    white-space: pre;
+    text-align: left;
+    content: '⠋\A⠙\A⠹\A⠸\A⠼\A⠴\A⠦\A⠧\A⠇\A⠏';
+    animation: spin 1s steps(10) infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: translateY(-15em);
+    }
   }
 </style>
