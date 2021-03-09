@@ -37,3 +37,9 @@ declare module "*.webp" {
 	const value: string;
 	export = value;
 }
+
+declare namespace NodeJS {
+	interface Process {
+		browser: boolean;
+	}
+}
