@@ -90,6 +90,23 @@ export default class Wallet {
     return receipt
   }
 
+  async send(to: Address, amount: number): Promise<Receipt> {
+    if (amount > this.balance) {
+      throw new Error("Insufficient funds")
+    }
+    this.balance -= amount
+    const receipt = {
+      from: this.address,
+      to: to,
+      amount: amount,
+      time: Date.now(),
+      blockheight: 311331,
+      messageId: 'bafy2bdacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl1wmyszdl8ljyr1'
+    }
+    this.receipts.push(receipt)
+    return receipt
+  }
+
   async getPrevReceipts(): Promise<Receipt[]> {
     return this.receipts
   }
