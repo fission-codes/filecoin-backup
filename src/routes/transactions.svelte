@@ -8,46 +8,15 @@
     CodeSnippet,
     Row,
     Column,
-    Loading
+    Loading,
+    Link
   } from 'carbon-components-svelte';
+  import Launch16 from 'carbon-icons-svelte/lib/Launch16';
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
   import type Wallet from '../../webnative-filecoin/src/wallet';
   import type { Receipt } from '../../webnative-filecoin/src/wallet';
-
-  const transactionHeaders = [
-    { key: 'date', value: 'Date' },
-    { key: 'amount', value: 'Amount' }
-  ];
-
-  let transactions = [
-    {
-      id: 'a',
-      date: '02/03/2021',
-      amount: '1.0'
-    },
-    {
-      id: 'b',
-      date: '02/11/2021',
-      amount: '2.2'
-    },
-    {
-      id: 'c',
-      date: '02/12/2021',
-      amount: '90.5'
-    }
-  ];
-
-  type TransactionStatus = {
-    status: 'in-progress' | 'complete' | 'error' | null;
-    message: string;
-  };
-
-  let providerTransactionStatus: TransactionStatus = {
-    status: null,
-    message: ''
-  };
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -69,6 +38,89 @@
   let unsubscribeWallet: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
 
+  /**
+   * Transactions. We keep track of transactions and transaction status.
+   * Transactions are displayed in a table with headers that can reasonably
+   * be displayed on a device with some fields center ellipsed. Display dates
+   * are localized with navigator.location.
+   * Transaction status tracks in-progress, completed, and erring transactions,
+   * and a message displayed below forms where transactions are submitted.
+   * Transactions are added to the transaction history on successful completion.
+   */
+  type Transaction = {
+    id: string;
+    date: string;
+    destination: string;
+    amount: string;
+    messageId: string;
+  };
+
+  type TransactionStatus = {
+    status: 'in-progress' | 'complete' | 'error' | null;
+    message: string;
+  };
+
+  let transactions: Transaction[] = [];
+  let transactionHeaders = [
+    { key: 'date', value: 'Date' },
+    { key: 'destination', value: 'Destination Address' },
+    { key: 'amount', value: 'Amount' },
+    { key: 'messageId', value: 'Message ID' }
+  ];
+
+  if (process.browser) {
+    if (window.innerWidth < 672) {
+      transactionHeaders = [
+        { key: 'date', value: 'Date' },
+        { key: 'amount', value: 'Amount' },
+        { key: 'messageId', value: 'Message ID' }
+      ];
+    }
+  }
+
+  let providerTransactionStatus: TransactionStatus = {
+    status: null,
+    message: ''
+  };
+
+  function ellipse(str: string): string {
+    let ellipsedString = '';
+
+    if (process.browser) {
+      if (window.innerWidth < 672) {
+        const leading = str.slice(0, 6);
+        const trailing = str.slice(-4);
+        ellipsedString = leading + '...' + trailing;
+      } else if (window.innerWidth < 1056) {
+        const leading = str.slice(0, 10);
+        const trailing = str.slice(-6);
+        ellipsedString = leading + '...' + trailing;
+      } else if (str.length > 62) {
+        const leading = str.slice(0, 42);
+        const trailing = str.slice(-18);
+        ellipsedString = leading + '...' + trailing;
+      } else {
+        return str;
+      }
+    }
+    return ellipsedString;
+  }
+
+  function formatDate(timestamp: number): string {
+    const date: Date = new Date(timestamp);
+    const lang: string = navigator.language;
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      dateStyle: 'long',
+      timeStyle: 'short'
+    };
+
+    const formattedDate: string = new Intl.DateTimeFormat(
+      lang,
+      formatOptions
+    ).format(date);
+    return formattedDate;
+  }
+
   onMount(async () => {
     const { sessionStore, walletStore } = await import('../webnative');
 
@@ -86,11 +138,17 @@
     if (wallet !== undefined) {
       wallet.getPrevReceipts().then(receipts => {
         receipts.forEach(receipt => {
-          transactions.push({
-            id: String(receipt.blockheight),
-            date: new Date(receipt.time).toLocaleString('en-ca'),
-            amount: String(receipt.amount)
-          });
+          transactions = [
+            ...transactions,
+            {
+              id: String(receipt.blockheight + new Date().getTime()),
+              date: formatDate(receipt.time),
+              destination: receipt.to,
+              amount: String(receipt.amount),
+              messageId:
+                'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
+            }
+          ];
         });
       });
     }
@@ -109,11 +167,17 @@
               status: 'complete',
               message: `✅ Sent ${receipt.amount} FIL to Lotus Provider`
             };
-            transactions.push({
-              id: String(receipt.blockheight),
-              date: new Date(receipt.time).toLocaleString('en-ca'),
-              amount: String(receipt.amount)
-            });
+            transactions = [
+              ...transactions,
+              {
+                id: String(receipt.blockheight + new Date().getTime()),
+                date: formatDate(receipt.time),
+                destination: receipt.to,
+                amount: String(receipt.amount),
+                messageId:
+                  'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
+              }
+            ];
           })
           .catch((err: Error) => {
             providerTransactionStatus = {
@@ -139,7 +203,7 @@
   </div>
 {:else if session.authed}
   <Row>
-    <Column padding aspectRatio="16x9" style="margin: 2rem">
+    <Column padding>
       <Row>
         <Column>
           <Row>
@@ -166,7 +230,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="3x4"
+              aspectRatio="4x3"
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
@@ -224,7 +288,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="3x4"
+              aspectRatio="4x3"
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
@@ -253,18 +317,45 @@
                 {:else}
                   <span>{providerTransactionStatus.message}</span>
                 {/if}
-                <h4>Transactions</h4>
-                <p>
-                  Funds sent from your Filecoin wallet to the Lotus Provider are
-                  listed here. Check the backups page for a listing of storage
-                  deals.
-                </p>
-                <DataTable headers={transactionHeaders} rows={transactions} />
               </div>
             </Column>
           </Row>
         </Column>
       </Row>
+    </Column>
+  </Row>
+  <Row>
+    <Column padding style="margin: 1rem;">
+      {#if transactions.length > 0}
+        <div class="transactions">
+          <h2>Transactions</h2>
+          <DataTable headers={transactionHeaders} rows={transactions}>
+            <span slot="cell" let:row let:cell>
+              {#if cell.key === 'messageId'}
+                <Link
+                  inline
+                  href="https://calibration.filscan.io/#/tipset/message-detail?cid={cell.value}"
+                  target="_blank"
+                >
+                  {ellipse(cell.value)}
+                  <Launch16 />
+                </Link>
+              {:else if cell.key === 'destination'}
+                <Link
+                  inline
+                  href="https://calibration.filscan.io/#/tipset/address-detail?address={cell.value}"
+                  target="_blank"
+                >
+                  {ellipse(cell.value)}
+                  <Launch16 />
+                </Link>
+              {:else}
+                {cell.value}
+              {/if}
+            </span>
+          </DataTable>
+        </div>
+      {/if}
     </Column>
   </Row>
 {/if}
@@ -299,7 +390,8 @@
     height: 3rem;
   }
 
-  .card {
+  .card,
+  .transactions {
     display: grid;
     row-gap: 1rem;
   }
