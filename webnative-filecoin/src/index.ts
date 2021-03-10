@@ -12,7 +12,8 @@ export const getWallet = async (fs: FileSystem): Promise<Wallet> => {
     to: providerAddress,
     amount: 0,
     time: Date.now(),
-    blockheight: 31330
+    blockheight: 31330,
+    messageId: 'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
   }
   const receipts = [
     {
@@ -25,6 +26,6 @@ export const getWallet = async (fs: FileSystem): Promise<Wallet> => {
       amount: 2.2,
       time: 1613413741000
     }
-  ] 
+  ]
   return new Wallet({ privKey, address, providerAddress, balance, providerBalance, receipts })
 }
