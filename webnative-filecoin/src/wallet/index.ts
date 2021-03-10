@@ -76,18 +76,8 @@ export default class Wallet {
     if (amount > this.balance) {
       throw new Error("Insufficient funds")
     }
-    this.balance -= amount
     this.providerBalance += amount
-    const receipt = {
-      from: this.address,
-      to: this.providerAddress,
-      amount: amount,
-      time: Date.now(),
-      blockheight: 311330,
-      messageId: 'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
-    }
-    this.receipts.push(receipt)
-    return receipt
+    return await this.send(this.providerAddress, amount)
   }
 
   async send(to: Address, amount: number): Promise<Receipt> {
