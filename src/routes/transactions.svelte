@@ -145,8 +145,7 @@
               date: formatDate(receipt.time),
               destination: receipt.to,
               amount: String(receipt.amount),
-              messageId:
-                'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
+              messageId: receipt.messageId
             }
           ];
         });
@@ -174,8 +173,7 @@
                 date: formatDate(receipt.time),
                 destination: receipt.to,
                 amount: String(receipt.amount),
-                messageId:
-                  'bafy2bzacedrpgf23kp34snrlkzl6c8ch4n12gtg3pbpzjjl2wmyszdl6ljyr1'
+                messageId: receipt.messageId
               }
             ];
           })
