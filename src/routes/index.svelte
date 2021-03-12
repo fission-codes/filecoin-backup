@@ -8,6 +8,7 @@
     Loading
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
+  import { goto } from '@sapper/app';
 
   /**
    * Carbon theme initialization.
@@ -74,7 +75,6 @@
         </Select>
       </div>
     </Column>
-
     <Column
       padding
       aspectRatio="4x3"
@@ -87,6 +87,9 @@
           A button linking to the transactions page goes here. Funds are
           deposited and transfered on this page.
         </p>
+        <Button on:click={() => goto('/transactions')}>
+          View Transactions
+        </Button>
       </div>
     </Column>
   </Row>
@@ -104,7 +107,6 @@
         <p>A button linking to the backups page goes here.</p>
       </div>
     </Column>
-
     <Column
       padding
       aspectRatio="4x3"
