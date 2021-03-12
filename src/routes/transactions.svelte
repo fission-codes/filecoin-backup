@@ -1,15 +1,16 @@
 <script lang="ts">
   import {
     Button,
+    CodeSnippet,
+    Column,
     DataTable,
     Form,
     FormGroup,
-    NumberInput,
-    CodeSnippet,
-    Row,
-    Column,
+    Link,
     Loading,
-    Link
+    NumberInput,
+    Row,
+    TextInput
   } from 'carbon-components-svelte';
   import Launch16 from 'carbon-icons-svelte/lib/Launch16';
   import { onMount, onDestroy } from 'svelte';
@@ -36,6 +37,7 @@
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
+  let sendFunds: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
 
   /**
@@ -77,6 +79,11 @@
       ];
     }
   }
+
+  let transactionStatus: TransactionStatus = {
+    status: null,
+    message: ''
+  };
 
   let providerTransactionStatus: TransactionStatus = {
     status: null,
@@ -152,6 +159,31 @@
       });
     }
 
+    sendFunds = async () => {
+      if (wallet !== undefined) {
+        transactionStatus = {
+          status: 'in-progress',
+          message: ' Sending funds'
+        };
+        wallet
+          .send(destinationAddress, sendAmount)
+          .then(async (receipt: Receipt) => {
+            walletStore.update(wallet => wallet);
+            transactionStatus = {
+              status: 'complete',
+              message: `✅ Sent ${receipt.amount} FIL`
+            };
+            updateTransactions(receipt);
+          })
+          .catch((err: Error) => {
+            transactionStatus = {
+              status: 'error',
+              message: `❌ ${err.message}`
+            };
+          });
+      }
+    };
+
     sendProviderFunds = async () => {
       if (wallet !== undefined) {
         providerTransactionStatus = {
@@ -166,16 +198,7 @@
               status: 'complete',
               message: `✅ Sent ${receipt.amount} FIL to Lotus Provider`
             };
-            transactions = [
-              ...transactions,
-              {
-                id: String(receipt.blockheight + new Date().getTime()),
-                date: formatDate(receipt.time),
-                destination: receipt.to,
-                amount: String(receipt.amount),
-                messageId: receipt.messageId
-              }
-            ];
+            updateTransactions(receipt);
           })
           .catch((err: Error) => {
             providerTransactionStatus = {
@@ -185,6 +208,19 @@
           });
       }
     };
+
+    function updateTransactions(receipt: Receipt) {
+      transactions = [
+        ...transactions,
+        {
+          id: String(receipt.blockheight + new Date().getTime()),
+          date: formatDate(receipt.time),
+          destination: receipt.to,
+          amount: String(receipt.amount),
+          messageId: receipt.messageId
+        }
+      ];
+    }
   });
 
   onDestroy(() => {
@@ -192,6 +228,8 @@
     unsubscribeWallet();
   });
 
+  let destinationAddress = '';
+  let sendAmount: number = 0;
   let sendProviderAmount: number = 0;
 </script>
 
@@ -248,7 +286,6 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
-
                 {#if wallet !== undefined}
                   <CodeSnippet
                     wrapText
@@ -256,6 +293,35 @@
                     code={wallet?.getAddress() || ''}
                     on:click={() => copy(wallet?.getAddress() || '')}
                   />
+                {/if}
+                <h4>Send Funds</h4>
+                <p>Enter a destination address and an amount of FIL to send.</p>
+                <Form on:submit={sendFunds}>
+                  <FormGroup>
+                    <Row>
+                      <Column>
+                        <TextInput
+                          labelText="Destination"
+                          bind:value={destinationAddress}
+                        />
+                      </Column>
+                      <Column>
+                        <NumberInput
+                          label="Amount"
+                          step={0.01}
+                          bind:value={sendAmount}
+                        />
+                      </Column>
+                    </Row>
+                  </FormGroup>
+                  <Button type="submit">Send Funds</Button>
+                </Form>
+                {#if transactionStatus.status === 'in-progress'}
+                  <span class="sending-funds">
+                    {transactionStatus.message}
+                  </span>
+                {:else}
+                  <span>{transactionStatus.message}</span>
                 {/if}
               </div>
             </Column>
@@ -298,10 +364,11 @@
                   your funds, you will be ready to start backing up files!
                 </p>
                 <h4>Send Funds to Lotus Provider</h4>
+                <p>Enter the amount of FIL to send to your Lotus provider.</p>
                 <Form on:submit={sendProviderFunds}>
                   <FormGroup>
                     <NumberInput
-                      helperText="Enter the amount of FIL to send"
+                      label="Amount"
                       step={0.01}
                       bind:value={sendProviderAmount}
                     />
