@@ -241,7 +241,7 @@
   <Row>
     <Column padding>
       <Row>
-        <Column>
+        <Column sm={4} md={8} lg={8}>
           <Row>
             <Column>
               <div class="balance">
@@ -327,7 +327,7 @@
             </Column>
           </Row>
         </Column>
-        <Column>
+        <Column sm={4} md={8} lg={8}>
           <Row>
             <Column>
               <div class="balance">
