@@ -229,8 +229,8 @@
   });
 
   let destinationAddress = '';
-  let sendAmount: number = 0;
-  let sendProviderAmount: number = 0;
+  let sendAmount: number = 1;
+  let sendProviderAmount: number = 1;
 </script>
 
 {#if session.loading}
@@ -308,7 +308,9 @@
                       <Column>
                         <NumberInput
                           label="Amount"
+                          min={0.01}
                           step={0.01}
+                          invalidText="Minimum amount is 0.01"
                           bind:value={sendAmount}
                         />
                       </Column>
@@ -369,7 +371,9 @@
                   <FormGroup>
                     <NumberInput
                       label="Amount"
+                      min={0.01}
                       step={0.01}
+                      invalidText="Minimum amount is 0.01"
                       bind:value={sendProviderAmount}
                     />
                   </FormGroup>
