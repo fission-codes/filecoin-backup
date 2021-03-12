@@ -45,7 +45,7 @@
 <div id="layout">
   <Theme persist bind:theme>
     <Header />
-    <Content style="background: none; padding: 1rem;">
+    <Content style="background: none; padding: 0;">
       <Grid style="height: 100%">
         <slot />
       </Grid>
