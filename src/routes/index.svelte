@@ -59,8 +59,9 @@
       <div class="card">
         <h2>Welcome</h2>
         <p>
-          Filecoin Backup App integrates Fission webnative and Filecoin to store
-          your files in the browser and on the Filecoin network.
+          Filecoin Backup App demonstrates the integration of Fission webnative
+          and Filecoin to sign transactions and store files in the browser and
+          on the Filecoin Calibration network.
         </p>
         <h4>Select a Theme</h4>
         <Select
@@ -82,10 +83,10 @@
     >
       <div class="card">
         <h2>Transactions</h2>
-        <p>Explanation of Filecoin wallet and Lotus provider goes here.</p>
         <p>
-          A button linking to the transactions page goes here. Funds are
-          deposited and transfered on this page.
+          Funds are held in a wallet managed by your browser. Send funds to a
+          Lotus provider that makes storage deals for you, or send funds to an
+          arbitrary address.
         </p>
         <Button on:click={() => goto('/transactions')}>
           View Transactions
@@ -102,9 +103,8 @@
       <div class="card">
         <h2>Backups</h2>
         <p>
-          Explanation of webnative hot storage and Filecoin backups go here.
+          Backups have not been implemented in the current version of this app.
         </p>
-        <p>A button linking to the backups page goes here.</p>
       </div>
     </Column>
     <Column
@@ -114,7 +114,7 @@
     >
       <div class="card">
         <h2>Community</h2>
-        <p>A bunch of social and community links go here.</p>
+        <p>Community links will go here.</p>
       </div>
     </Column>
   </Row>
