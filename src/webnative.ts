@@ -1,7 +1,8 @@
 import * as webnative from 'webnative';
+import * as filecoin from '../webnative-filecoin/src/index';
+import type Wallet from '../webnative-filecoin/src/wallet';
 import { writable, Writable } from 'svelte/store';
 
-import * as filecoin from '../webnative-filecoin/src/index';
 
 export type Session = {
   username: string;
@@ -19,6 +20,9 @@ export const sessionStore: Writable<Session> =
     loading: true,
     error: false
   });
+
+export const walletStore: Writable<Wallet | undefined> =
+  writable(undefined);
 
 let state: webnative.State;
 
@@ -57,10 +61,10 @@ export async function initialize() {
           error: false
         });
 
-        if(state.fs){
+        if (state.fs) {
           const wallet = await filecoin.getWallet(state.fs)
+          walletStore.set(wallet);
         }
-
         break;
     }
   }).catch(err => {
@@ -91,3 +95,4 @@ export async function initialize() {
 export function redirectToLobby() {
   webnative.redirectToLobby(state.permissions);
 }
+
