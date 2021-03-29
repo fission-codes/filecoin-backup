@@ -2,7 +2,7 @@
 export type Post = { title: string, url: string }
 
 export async function getPosts(): Promise<Post[]> {
-  const res = await fetch('https://talk.fission.codes/tags/filecoin.json');
+  const res = await fetch('https://talk.fission.codes/tag/filecoin.json');
   const json: any = await res.json();
 
   if (res.ok) {
