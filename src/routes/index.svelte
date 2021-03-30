@@ -120,7 +120,7 @@
     >
       <div class="card">
         <h2>Community</h2>
-        <p>A bunch of social and community links go here.</p>
+        <p>Read the latest Filecoin posts on the Fission forums.</p>
         {#await postsPromise then posts}
           {#each posts as post}
             <a href={post.url} target="_blank">
