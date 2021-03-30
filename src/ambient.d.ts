@@ -37,3 +37,16 @@ declare module "*.webp" {
 	const value: string;
 	export = value;
 }
+
+declare namespace Intl {
+	interface DateTimeFormatOptions {
+		dateStyle: 'full' | 'long' | 'medium' | 'short';
+		timeStyle: 'full' | 'long' | 'medium' | 'short';
+	}
+}
+
+declare namespace NodeJS {
+	interface Process {
+		browser: boolean;
+	}
+}

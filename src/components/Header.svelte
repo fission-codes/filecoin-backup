@@ -7,6 +7,7 @@
     HeaderNavItem
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
+  import type Wallet from '../../webnative-filecoin/src/wallet';
 
   /**
    * Carbon theme initialization.
@@ -38,17 +39,27 @@
     loading: true,
     error: false
   };
-  let unsubscribe: VoidFunction = () => {};
+  let wallet: Wallet | undefined;
+
+  let unsubscribeSession: VoidFunction = () => {};
+  let unsubscribeWallet: VoidFunction = () => {};
 
   onMount(async () => {
-    const { sessionStore } = await import('../webnative');
+    const { sessionStore, walletStore } = await import('../webnative');
 
-    unsubscribe = sessionStore.subscribe(val => {
+    unsubscribeSession = sessionStore.subscribe(val => {
       session = val;
+    });
+
+    unsubscribeWallet = walletStore.subscribe(val => {
+      wallet = val;
     });
   });
 
-  onDestroy(unsubscribe);
+  onDestroy(() => {
+    unsubscribeSession();
+    unsubscribeWallet();
+  });
 </script>
 
 <Header company="Fission" platformName="Filecoin Backup" href="/">
@@ -62,26 +73,36 @@
   {#if session.authed}
     <HeaderUtilities>
       <div class="indicators">
-        <div class="indicator">
+        <div class="fission-indicator">
           <img class="logo" src="/icon.png" alt="Fission username" />
           <span>{session.username}</span>
         </div>
-        <div class="indicator">
-          <img
-            class="logo"
-            src="/filecoin-logo.svg"
-            alt="Filecoin wallet balance"
-          />
-          <span>10.0 FIL</span>
-        </div>
-        <div class="indicator">
-          <img
-            class="logo"
-            src="/filecoin-symbol-color.svg"
-            alt="Lotus provider balance"
-          />
-          <span>250.3 FIL</span>
-        </div>
+        {#if wallet !== undefined}
+          <div class="filecoin-indicator">
+            {#await wallet?.getBalance() then balance}
+              <img
+                class="logo"
+                src="/filecoin-logo.svg"
+                alt="Filecoin wallet balance"
+              />
+              <span>{balance}</span>
+            {:catch}
+              <span>🤖💥</span>
+            {/await}
+          </div>
+          <div class="filecoin-indicator">
+            {#await wallet?.getProviderBalance() then providerBalance}
+              <img
+                class="logo"
+                src="/filecoin-symbol-color.svg"
+                alt="Lotus provider balance"
+              />
+              <span>{providerBalance}</span>
+            {:catch}
+              <span>🤖💥</span>
+            {/await}
+          </div>
+        {/if}
       </div>
     </HeaderUtilities>
   {/if}
@@ -90,20 +111,22 @@
 <style>
   .indicators {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: auto auto auto;
     place-items: center right;
     column-gap: 1.5rem;
     padding: 0 1rem;
   }
 
-  .indicator {
+  .fission-indicator,
+  .filecoin-indicator {
     display: grid;
     place-items: center left;
     grid-template-columns: auto 1fr;
     column-gap: 0.5rem;
   }
 
-  .indicator > span {
+  .fission-indicator > span,
+  .filecoin-indicator > span {
     color: #ffffff;
   }
 
@@ -111,5 +134,15 @@
     display: inline-block;
     width: 1.5rem;
     height: 1.5rem;
+  }
+
+  @media (max-width: 671px) {
+    .indicators {
+      grid-template-columns: 1fr;
+    }
+
+    .filecoin-indicator {
+      display: none;
+    }
   }
 </style>

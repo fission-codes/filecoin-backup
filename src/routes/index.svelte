@@ -10,6 +10,7 @@
   import { getContext, onMount, onDestroy } from 'svelte';
   import type { Post } from '../feed';
   import { getPosts } from '../feed';
+  import { goto } from '@sapper/app';
 
   /**
    * Carbon theme initialization.
@@ -64,8 +65,9 @@
       <div class="card">
         <h2>Welcome</h2>
         <p>
-          Filecoin Backup App integrates Fission webnative and Filecoin to store
-          your files in the browser and to the Filecoin network.
+          Filecoin Backup App demonstrates the integration of Fission webnative
+          and Filecoin to sign transactions and store files in the browser and
+          on the Filecoin Calibration network.
         </p>
         <h4>Select a Theme</h4>
         <Select
@@ -80,7 +82,6 @@
         </Select>
       </div>
     </Column>
-
     <Column
       padding
       aspectRatio="4x3"
@@ -88,11 +89,14 @@
     >
       <div class="card">
         <h2>Transactions</h2>
-        <p>Explanation of Filecoin wallet and Lotus provider goes here.</p>
         <p>
-          A button linking to the balances page goes here. Funds are deposited
-          and transfered on this page.
+          Funds are held in a wallet managed by your browser. Send funds to a
+          Lotus provider that makes storage deals for you, or send funds to an
+          arbitrary address.
         </p>
+        <Button on:click={() => goto('/transactions')}>
+          View Transactions
+        </Button>
       </div>
     </Column>
   </Row>
@@ -105,12 +109,10 @@
       <div class="card">
         <h2>Backups</h2>
         <p>
-          Explanation of webnative hot storage and Filecoin backups go here.
+          Backups have not been implemented in the current version of this app.
         </p>
-        <p>A button linking to the files page goes here.</p>
       </div>
     </Column>
-
     <Column
       padding
       aspectRatio="4x3"
@@ -158,14 +160,12 @@
   .error {
     display: grid;
     place-items: center center;
-
-    height: 100%;
+    height: calc(100vh - 4rem);
   }
 
   .welcome {
     display: grid;
     row-gap: 1rem;
-
     padding-top: 2rem;
   }
 

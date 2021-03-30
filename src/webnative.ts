@@ -1,4 +1,6 @@
 import * as webnative from 'webnative';
+import * as filecoin from '../webnative-filecoin/src/index';
+import type Wallet from '../webnative-filecoin/src/wallet';
 import { writable, Writable } from 'svelte/store';
 
 
@@ -19,6 +21,9 @@ export const sessionStore: Writable<Session> =
     error: false
   });
 
+export const walletStore: Writable<Wallet | undefined> =
+  writable(undefined);
+
 let state: webnative.State;
 
 const fissionInit = {
@@ -31,7 +36,7 @@ const fissionInit = {
 }
 
 export async function initialize() {
-  webnative.initialise(fissionInit).then(st => {
+  webnative.initialise(fissionInit).then(async st => {
     state = st;
 
     switch (state.scenario) {
@@ -55,6 +60,11 @@ export async function initialize() {
           authed: true,
           error: false
         });
+
+        if (state.fs) {
+          const wallet = await filecoin.getWallet(state.fs)
+          walletStore.set(wallet);
+        }
         break;
     }
   }).catch(err => {
@@ -85,3 +95,4 @@ export async function initialize() {
 export function redirectToLobby() {
   webnative.redirectToLobby(state.permissions);
 }
+
