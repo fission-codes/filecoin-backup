@@ -16,7 +16,7 @@ export async function getPosts(): Promise<Post[]> {
       });
     });
 
-    return posts;
+    return posts.slice(0, 10);
   } else {
     throw new Error('Could not load most recent posts');
   }
