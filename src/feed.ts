@@ -2,7 +2,7 @@
 export type Post = { title: string, url: string }
 
 export async function getPosts(): Promise<Post[]> {
-  const res = await fetch('https://talk.fission.codes/tag/filecoin.json');
+  const res = await fetch('https://talk.fission.codes/c/projects/webnative-filecoin-integration/48.json');
   const json: any = await res.json();
 
   if (res.ok) {
@@ -16,7 +16,7 @@ export async function getPosts(): Promise<Post[]> {
       });
     });
 
-    return posts.slice(0, 10);
+    return posts.slice(0, 6).reverse();
   } else {
     throw new Error('Could not load most recent posts');
   }
