@@ -92,18 +92,20 @@
   };
 
   $: wallet?.getPrevReceipts().then(receipts => {
-    receipts.forEach(receipt => {
-      transactions = [
-        ...transactions,
-        {
-          id: receipt.time.toString(),
-          date: formatDate(receipt.time),
-          destination: receipt.to,
-          amount: String(receipt.amount),
-          messageId: receipt.messageId
-        }
-      ];
-    });
+    if (transactions.length === 0) {
+      receipts.forEach(receipt => {
+        transactions = [
+          ...transactions,
+          {
+            id: receipt.time.toString(),
+            date: formatDate(receipt.time),
+            destination: receipt.to,
+            amount: String(receipt.amount),
+            messageId: receipt.messageId
+          }
+        ];
+      });
+    }
   });
 
   function ellipse(str: string): string {
