@@ -63,7 +63,7 @@ export async function initialize() {
         });
 
         if (state.fs) {
-          const wallet = await filecoin.getWallet(privKey)
+          const wallet = await filecoin.getWallet(privKey);
           walletStore.set(wallet);
         }
         break;
@@ -95,5 +95,10 @@ export async function initialize() {
 
 export function redirectToLobby() {
   webnative.redirectToLobby(state.permissions);
+}
+
+export async function refreshWallet() {
+  const wallet = await filecoin.getWallet(privKey);
+  walletStore.set(wallet);
 }
 

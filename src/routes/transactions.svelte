@@ -39,6 +39,7 @@
   let unsubscribeWallet: VoidFunction = () => {};
   let sendFunds: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
+  let refreshBalance: VoidFunction = () => {};
 
   /**
    * Transactions. We keep track of transactions and transaction status.
@@ -144,7 +145,9 @@
   }
 
   onMount(async () => {
-    const { sessionStore, walletStore } = await import('../webnative');
+    const { sessionStore, walletStore, refreshWallet } = await import(
+      '../webnative'
+    );
 
     unsubscribeSession = sessionStore.subscribe(val => {
       if (!val.loading && !val.authed) {
@@ -221,6 +224,10 @@
         }
       ];
     }
+
+    refreshBalance = async () => {
+      refreshWallet();
+    };
   });
 
   onDestroy(() => {
@@ -294,6 +301,13 @@
                     on:click={() => copy(wallet?.getAddress() || '')}
                   />
                 {/if}
+                <Button
+                  size="small"
+                  kind="tertiary"
+                  on:click={() => refreshBalance()}
+                >
+                  Refresh Balance
+                </Button>
                 <h4>Send Funds</h4>
                 <p>Enter a destination address and an amount of FIL to send.</p>
                 <Form on:submit={sendFunds}>
