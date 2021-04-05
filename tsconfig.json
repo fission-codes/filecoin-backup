@@ -11,6 +11,6 @@
 				"node_modules/@types"
 			]
 		},
-		"include": ["src/**/*", "src/node_modules/**/*", "./webnative-filecoin/"],
+		"include": ["src/**/*", "src/node_modules/**/*"],
 		"exclude": ["node_modules/*", "__sapper__/*", "static/*"]
 	}
