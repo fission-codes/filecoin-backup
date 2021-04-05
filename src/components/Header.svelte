@@ -7,7 +7,7 @@
     HeaderNavItem
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
-  import type Wallet from '../../webnative-filecoin/src/wallet';
+  import { Wallet } from 'webnative-filecoin';
 
   /**
    * Carbon theme initialization.

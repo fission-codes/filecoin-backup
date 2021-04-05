@@ -16,8 +16,8 @@
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
-  import type Wallet from '../../webnative-filecoin/src/wallet';
-  import type { Receipt } from '../../webnative-filecoin/src/wallet';
+  import { Wallet } from 'webnative-filecoin';
+  import { Receipt } from 'webnative-filecoin';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -114,7 +114,7 @@
   }
 
   function formatDate(timestamp: number): string {
-    const date: Date = new Date(timestamp);
+    const date: Date = new Date(+timestamp);
     const lang: string = navigator.language;
     const formatOptions: Intl.DateTimeFormatOptions = {
       dateStyle: 'long',
@@ -148,7 +148,7 @@
           transactions = [
             ...transactions,
             {
-              id: String(receipt.blockheight + new Date().getTime()),
+              id: receipt.time.toString(),
               date: formatDate(receipt.time),
               destination: receipt.to,
               amount: String(receipt.amount),
@@ -165,8 +165,9 @@
           status: 'in-progress',
           message: ' Sending funds'
         };
+        const messageId = await wallet.send(sendAmount, destinationAddress);
         wallet
-          .send(destinationAddress, sendAmount)
+          .waitForReceipt(messageId)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             transactionStatus = {
@@ -190,8 +191,9 @@
           status: 'in-progress',
           message: ' Sending funds to Lotus Provider'
         };
+        const messageId = await wallet.fundProvider(sendProviderAmount);
         wallet
-          .fundProvider(sendProviderAmount)
+          .waitForReceipt(messageId)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             providerTransactionStatus = {
@@ -213,7 +215,7 @@
       transactions = [
         ...transactions,
         {
-          id: String(receipt.blockheight + new Date().getTime()),
+          id: receipt.time.toString(),
           date: formatDate(receipt.time),
           destination: receipt.to,
           amount: String(receipt.amount),
