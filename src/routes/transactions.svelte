@@ -16,8 +16,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
-  import { Wallet } from 'webnative-filecoin';
-  import { Receipt } from 'webnative-filecoin';
+  import { Wallet, Receipt, MessageStatus } from 'webnative-filecoin';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -91,9 +90,10 @@
     message: ''
   };
 
-  $: wallet?.getPrevReceipts().then(receipts => {
+  $: {
+    const receipts = wallet?.getPrevReceipts();
     if (transactions.length === 0) {
-      receipts.forEach(receipt => {
+      receipts?.forEach(receipt => {
         transactions = [
           ...transactions,
           {
@@ -106,7 +106,7 @@
         ];
       });
     }
-  });
+  }
 
   function ellipse(str: string): string {
     let ellipsedString = '';
@@ -168,9 +168,9 @@
           status: 'in-progress',
           message: ' Sending funds'
         };
-        const messageId = await wallet.send(sendAmount, destinationAddress);
+        const receipt = await wallet.send(sendAmount, destinationAddress);
         wallet
-          .waitForReceipt(messageId)
+          .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             transactionStatus = {
@@ -194,9 +194,9 @@
           status: 'in-progress',
           message: ' Sending funds to Lotus Provider'
         };
-        const messageId = await wallet.fundProvider(sendProviderAmount);
+        const receipt = await wallet.fundProvider(sendProviderAmount);
         wallet
-          .waitForReceipt(messageId)
+          .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             providerTransactionStatus = {

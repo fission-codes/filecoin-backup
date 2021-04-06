@@ -16,7 +16,7 @@
     "sirv": "^1.0.0",
     "svelte-seo": "^1.1.0",
     "webnative": "^0.21.4",
-    "webnative-filecoin": "^0.3.1"
+    "webnative-filecoin": "^0.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
