@@ -147,9 +147,7 @@
   }
 
   onMount(async () => {
-    const { sessionStore, walletStore, refreshWallet } = await import(
-      '../webnative'
-    );
+    const { sessionStore, walletStore } = await import('../webnative');
 
     unsubscribeSession = sessionStore.subscribe(val => {
       if (!val.loading && !val.authed) {
@@ -168,7 +166,7 @@
           status: 'in-progress',
           message: ' Sending funds'
         };
-        const receipt = await wallet.send(sendAmount, destinationAddress);
+        const receipt = await wallet.send(destinationAddress, sendAmount);
         wallet
           .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
@@ -228,7 +226,7 @@
     }
 
     refreshBalance = async () => {
-      refreshWallet();
+      walletStore.update(wallet => wallet);
     };
   });
 
