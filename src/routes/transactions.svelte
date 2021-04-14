@@ -17,6 +17,7 @@
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
   import { Wallet, Receipt, MessageStatus } from 'webnative-filecoin';
+  import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -40,6 +41,7 @@
   let sendProviderFunds: VoidFunction = () => {};
   let refreshBalance: VoidFunction = () => {};
 
+  let cardAspectRatio: AspectRatioProps['ratio'];
   /**
    * Transactions. We keep track of transactions and transaction status.
    * Transactions are displayed in a table with headers that can reasonably
@@ -89,6 +91,8 @@
     status: null,
     message: ''
   };
+
+  setCardAspectRatio();
 
   $: {
     const receipts = wallet?.getPrevReceipts();
@@ -144,6 +148,18 @@
       formatOptions
     ).format(date);
     return formattedDate;
+  }
+
+  function setCardAspectRatio() {
+    if (process.browser) {
+      if (window.innerWidth > 1312) {
+        cardAspectRatio = '1x1';
+      } else if (window.innerWidth > 1055) {
+        cardAspectRatio = '3x4';
+      } else {
+        cardAspectRatio = '4x3';
+      }
+    }
   }
 
   onMount(async () => {
@@ -240,6 +256,8 @@
   let sendProviderAmount: number = 1;
 </script>
 
+<svelte:window on:resize={setCardAspectRatio} />
+
 {#if session.loading}
   <div class="loading">
     <Loading withOverlay={false} />
@@ -273,7 +291,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="4x3"
+              aspectRatio={cardAspectRatio}
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
@@ -368,7 +386,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="4x3"
+              aspectRatio={cardAspectRatio}
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
