@@ -1,8 +1,15 @@
 import * as webnative from 'webnative';
 import * as filecoin from 'webnative-filecoin';
-import { Wallet, DEFAULT_KEY_PERMISSION } from 'webnative-filecoin';
-import { writable, Writable } from 'svelte/store';
+import { Wallet } from 'webnative-filecoin';
+import { derived, get, writable, Readable, Writable } from 'svelte/store';
 
+
+webnative.setup.debug({ enabled: true });
+webnative.setup.endpoints({
+  api: "https://runfission.net",
+  lobby: "http://localhost:8001",
+  user: "fissionuser.net"
+});
 
 export type Session = {
   username: string;
@@ -24,6 +31,12 @@ export const sessionStore: Writable<Session> =
 export const walletStore: Writable<Wallet | undefined> =
   writable(undefined);
 
+
+export const cosignPermissionStore: Readable<boolean> = derived(
+  walletStore,
+  $walletStore => $walletStore?.ucan ? true : false
+);
+
 let state: webnative.State;
 
 const fissionInit = {
@@ -33,8 +46,7 @@ const fissionInit = {
       creator: "bgins"
     },
     fs: {
-      privatePaths: [DEFAULT_KEY_PERMISSION],
-      publicPaths: []
+      private: [ filecoin.DEFAULT_KEY_PERMISSION ]
     }
   }
 }
@@ -66,7 +78,7 @@ export async function initialize() {
         });
 
         if (state.fs) {
-          const wallet = await filecoin.getWallet(state.fs);
+          const wallet = await filecoin.getWallet(state.fs, webnative);
           walletStore.set(wallet);
         }
         break;

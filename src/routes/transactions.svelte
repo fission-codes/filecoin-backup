@@ -6,18 +6,21 @@
     DataTable,
     Form,
     FormGroup,
+    InlineNotification,
     Link,
     Loading,
+    NotificationActionButton,
     NumberInput,
     Row,
     TextInput
   } from 'carbon-components-svelte';
   import Launch16 from 'carbon-icons-svelte/lib/Launch16';
+  import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
-  import { Wallet, Receipt, MessageStatus } from 'webnative-filecoin';
-  import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
+
+  import { Wallet, Receipt, MessageStatus, requestCosignPermissions } from 'webnative-filecoin';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -34,12 +37,15 @@
     error: false
   };
   let wallet: Wallet | undefined;
+  let validCosignPermission: boolean;
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
+  let unsubscribeCosignPermission: VoidFunction = () => {};
   let sendFunds: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
   let refreshBalance: VoidFunction = () => {};
+  let requestPermissions: VoidFunction = () => {};
 
   let cardAspectRatio: AspectRatioProps['ratio'];
   /**
@@ -163,7 +169,9 @@
   }
 
   onMount(async () => {
-    const { sessionStore, walletStore } = await import('../webnative');
+    const { sessionStore, walletStore, cosignPermissionStore } = await import(
+      '../webnative'
+    );
 
     unsubscribeSession = sessionStore.subscribe(val => {
       if (!val.loading && !val.authed) {
@@ -174,6 +182,10 @@
 
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
+    });
+
+    unsubscribeCosignPermission = cosignPermissionStore.subscribe(val => {
+      validCosignPermission = val;
     });
 
     sendFunds = async () => {
@@ -244,11 +256,18 @@
     refreshBalance = async () => {
       walletStore.update(wallet => wallet);
     };
+
+    requestPermissions = async () => {
+      if (wallet) {
+         await requestCosignPermissions(wallet);
+      }
+    }
   });
 
   onDestroy(() => {
     unsubscribeSession();
     unsubscribeWallet();
+    unsubscribeCosignPermission();
   });
 
   let destinationAddress = '';
@@ -265,6 +284,25 @@
 {:else if session.authed}
   <Row>
     <Column padding>
+      {#if !validCosignPermission}
+        <Row>
+          <Column style="margin: 0 1rem;">
+            <InlineNotification
+              hideCloseButton
+              lowContrast
+              kind="info"
+              title="Permissions required:"
+              subtitle="Please grant permission to send funds"
+            >
+              <div slot="actions" on:click={() => requestPermissions()}>
+                <NotificationActionButton
+                  >Request Permissions</NotificationActionButton
+                >
+              </div>
+            </InlineNotification>
+          </Column>
+        </Row>
+      {/if}
       <Row>
         <Column sm={4} md={8} lg={8}>
           <Row>
@@ -334,6 +372,7 @@
                       <Column>
                         <TextInput
                           labelText="Destination"
+                          disabled={!validCosignPermission}
                           bind:value={destinationAddress}
                         />
                       </Column>
@@ -343,12 +382,15 @@
                           min={0.01}
                           step={0.01}
                           invalidText="Minimum amount is 0.01"
+                          disabled={!validCosignPermission}
                           bind:value={sendAmount}
                         />
                       </Column>
                     </Row>
                   </FormGroup>
-                  <Button type="submit">Send Funds</Button>
+                  <Button type="submit" disabled={!validCosignPermission}>
+                    Send Funds
+                  </Button>
                 </Form>
                 {#if transactionStatus.status === 'in-progress'}
                   <span class="sending-funds">
@@ -406,10 +448,13 @@
                       min={0.01}
                       step={0.01}
                       invalidText="Minimum amount is 0.01"
+                      disabled={!validCosignPermission}
                       bind:value={sendProviderAmount}
                     />
                   </FormGroup>
-                  <Button type="submit">Send Funds</Button>
+                  <Button type="submit" disabled={!validCosignPermission}>
+                    Send Funds
+                  </Button>
                 </Form>
                 {#if providerTransactionStatus.status === 'in-progress'}
                   <span class="sending-funds">
@@ -425,6 +470,7 @@
       </Row>
     </Column>
   </Row>
+
   <Row>
     <Column padding style="margin: 1rem;">
       {#if transactions.length > 0}

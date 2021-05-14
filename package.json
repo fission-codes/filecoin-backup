@@ -15,8 +15,8 @@
     "polka": "next",
     "sirv": "^1.0.0",
     "svelte-seo": "^1.1.0",
-    "webnative": "^0.21.4",
-    "webnative-filecoin": "^0.5.6"
+    "webnative": "0.24.2-alpha-2",
+    "webnative-filecoin": "0.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
