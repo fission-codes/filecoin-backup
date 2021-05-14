@@ -1339,18 +1339,18 @@
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001179.tgz"
   "version" "1.0.30001179"
 
-"carbon-components-svelte@^0.29.2":
-  "integrity" "sha512-bdABB1nauA+eN3xmr8QCH2Lvto8HiW+0A9eI1gHsIbwtFDhsDfG+a10oZje8E/yHOCoY5T+FFhGdB8VCq6fb2w=="
-  "resolved" "https://registry.npmjs.org/carbon-components-svelte/-/carbon-components-svelte-0.29.2.tgz"
-  "version" "0.29.2"
+"carbon-components-svelte@^0.30.0":
+  "integrity" "sha512-HfLhHK6CYVjZxBx70kkKKc2AVQKyYi1E4ybzDH1L4gCnwJfejyUW4z56CgKkWQLrhecz+IJBaNKcBSSMr6Svfw=="
+  "resolved" "https://registry.npmjs.org/carbon-components-svelte/-/carbon-components-svelte-0.30.0.tgz"
+  "version" "0.30.0"
   dependencies:
     "carbon-icons-svelte" "^10.21.0"
     "flatpickr" "4.6.9"
 
 "carbon-icons-svelte@^10.21.0":
-  "integrity" "sha512-jjJXfCDF23QM9lFJDlwRFp6Z8Ar/atT167WNcUEJpn6h7soX1jk9Uexnr1/7GX2QtjhAvVl5S7wHZrPO7cLOrQ=="
-  "resolved" "https://registry.npmjs.org/carbon-icons-svelte/-/carbon-icons-svelte-10.23.0.tgz"
-  "version" "10.23.0"
+  "integrity" "sha512-C3K+U2PRy63WHFZme1HQNju89rhVIQmUkfgBrZzcezdutkhXbSPOY+o/MI0B2mDcQ7G9gfhEpqsXET8gBTWfJQ=="
+  "resolved" "https://registry.npmjs.org/carbon-icons-svelte/-/carbon-icons-svelte-10.28.0.tgz"
+  "version" "10.28.0"
 
 "chalk@^2.0.0":
   "integrity" "sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ=="

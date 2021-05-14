@@ -1,7 +1,7 @@
 <script>
   import { Grid, Row, Column, Link, Icon } from 'carbon-components-svelte';
   import LogoSlack32 from 'carbon-icons-svelte/lib/LogoSlack32';
-  import GameConsole32 from 'carbon-icons-svelte/lib/GameConsole32';
+  import LogoDiscord32 from 'carbon-icons-svelte/lib/LogoDiscord32';
   import LogoGithub32 from 'carbon-icons-svelte/lib/LogoGithub32';
   import Chat32 from 'carbon-icons-svelte/lib/Chat32';
 </script>
@@ -15,7 +15,7 @@
             <Icon render={LogoSlack32} style="fill: var(--cds-icon-01)" />
           </Link>
           <Link href="https://discord.gg/daDMAjE" target="_blank">
-            <Icon render={GameConsole32} style="fill: var(--cds-icon-01)" />
+            <Icon render={LogoDiscord32} style="fill: var(--cds-icon-01)" />
           </Link>
           <Link
             href="https://github.com/fission-suite/filecoin-backup"
