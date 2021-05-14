@@ -521,6 +521,7 @@
   }
 
   .balance-value {
+    height: 100px;
     font-size: 82px;
   }
 
