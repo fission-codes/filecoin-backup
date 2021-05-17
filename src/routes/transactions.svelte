@@ -168,6 +168,7 @@
       if (wallet?.ucan) {
         cosignPermission.valid = true;
         wallet.onExpire(() => (cosignPermission.valid = false));
+        console.log((wallet.msTilExpire() ?? 0) / 1000);
       } else {
         cosignPermission.valid = false;
       }
@@ -366,15 +367,22 @@
                         <NumberInput
                           label="Amount"
                           min={0.01}
+                          max={1000}
                           step={0.01}
-                          invalidText="Minimum amount is 0.01"
+                          invalidText="Amount must be between 0.01 and 1000"
                           disabled={!cosignPermission.valid}
                           bind:value={sendAmount}
                         />
                       </Column>
                     </Row>
                   </FormGroup>
-                  <Button type="submit" disabled={!cosignPermission.valid || destinationAddress.length === 0}>
+                  <Button
+                    type="submit"
+                    disabled={!cosignPermission.valid ||
+                      destinationAddress.length === 0 ||
+                      sendAmount < 0.01 ||
+                      sendAmount > 1000}
+                  >
                     Send Funds
                   </Button>
                 </Form>
@@ -432,13 +440,19 @@
                     <NumberInput
                       label="Amount"
                       min={0.01}
+                      max={1000}
                       step={0.01}
-                      invalidText="Minimum amount is 0.01"
+                      invalidText="Amount must be between 0.01 and 1000"
                       disabled={!cosignPermission.valid}
                       bind:value={sendProviderAmount}
                     />
                   </FormGroup>
-                  <Button type="submit" disabled={!cosignPermission.valid}>
+                  <Button
+                    type="submit"
+                    disabled={!cosignPermission.valid ||
+                      sendProviderAmount < 0.01 ||
+                      sendProviderAmount > 1000}
+                  >
                     Send Funds
                   </Button>
                 </Form>
