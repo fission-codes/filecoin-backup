@@ -15,6 +15,7 @@
     TextInput
   } from 'carbon-components-svelte';
   import Launch16 from 'carbon-icons-svelte/lib/Launch16';
+  import Help16 from 'carbon-icons-svelte/lib/Help16';
   import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
@@ -270,6 +271,15 @@
               title="Permissions required:"
               subtitle="Please grant cosigning permission to send funds."
             >
+              <Link
+                target="_blank"
+                style="color: #666; padding: 0 2px"
+                href="https://talk.fission.codes/t/filecoin-backup-faq/1901"
+              >
+                <Help16>
+                  <title>More information on cosigning permissions</title>
+                </Help16>
+              </Link>
               <div slot="actions" on:click={() => requestPermissions()}>
                 <NotificationActionButton>
                   Request Permissions
