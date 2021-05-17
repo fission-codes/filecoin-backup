@@ -169,7 +169,6 @@
       if (wallet?.ucan) {
         cosignPermission.valid = true;
         wallet.onExpire(() => (cosignPermission.valid = false));
-        console.log((wallet.msTilExpire() ?? 0) / 1000);
       } else {
         cosignPermission.valid = false;
       }
