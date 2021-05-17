@@ -1,7 +1,7 @@
 import * as webnative from 'webnative';
 import * as filecoin from 'webnative-filecoin';
 import { Wallet } from 'webnative-filecoin';
-import { derived, get, writable, Readable, Writable } from 'svelte/store';
+import { writable, Writable } from 'svelte/store';
 
 
 webnative.setup.debug({ enabled: true });
@@ -31,12 +31,6 @@ export const sessionStore: Writable<Session> =
 export const walletStore: Writable<Wallet | undefined> =
   writable(undefined);
 
-
-export const cosignPermissionStore: Readable<boolean> = derived(
-  walletStore,
-  $walletStore => $walletStore?.ucan ? true : false
-);
-
 let state: webnative.State;
 
 const fissionInit = {
@@ -46,7 +40,7 @@ const fissionInit = {
       creator: "bgins"
     },
     fs: {
-      private: [ filecoin.DEFAULT_KEY_PERMISSION ]
+      private: [filecoin.DEFAULT_KEY_PERMISSION]
     }
   }
 }

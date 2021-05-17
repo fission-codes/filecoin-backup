@@ -20,7 +20,11 @@
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
 
-  import { Wallet, Receipt, MessageStatus, requestCosignPermissions } from 'webnative-filecoin';
+  import {
+    Wallet,
+    Receipt,
+    MessageStatus,
+  } from 'webnative-filecoin';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -37,11 +41,14 @@
     error: false
   };
   let wallet: Wallet | undefined;
-  let validCosignPermission: boolean;
+  let cosignPermission = {
+    valid: false,
+    error: false,
+    errorMessage: ''
+  };
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
-  let unsubscribeCosignPermission: VoidFunction = () => {};
   let sendFunds: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
   let refreshBalance: VoidFunction = () => {};
@@ -169,9 +176,7 @@
   }
 
   onMount(async () => {
-    const { sessionStore, walletStore, cosignPermissionStore } = await import(
-      '../webnative'
-    );
+    const { sessionStore, walletStore } = await import('../webnative');
 
     unsubscribeSession = sessionStore.subscribe(val => {
       if (!val.loading && !val.authed) {
@@ -182,10 +187,12 @@
 
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
-    });
-
-    unsubscribeCosignPermission = cosignPermissionStore.subscribe(val => {
-      validCosignPermission = val;
+      if (wallet?.ucan) {
+        cosignPermission.valid = true;
+        wallet.onExpire(() => cosignPermission.valid = false);
+      } else {
+        cosignPermission.valid = false;
+      }
     });
 
     sendFunds = async () => {
@@ -259,15 +266,22 @@
 
     requestPermissions = async () => {
       if (wallet) {
-         await requestCosignPermissions(wallet);
+        wallet
+          .requestPermissions()
+          .then(() => {
+            cosignPermission.valid = true;
+          })
+          .catch(err => {
+            cosignPermission.error = true;
+            cosignPermission.errorMessage = err.data;
+          });
       }
-    }
+    };
   });
 
   onDestroy(() => {
     unsubscribeSession();
     unsubscribeWallet();
-    unsubscribeCosignPermission();
   });
 
   let destinationAddress = '';
@@ -284,7 +298,7 @@
 {:else if session.authed}
   <Row>
     <Column padding>
-      {#if !validCosignPermission}
+      {#if !cosignPermission.valid && !cosignPermission.error}
         <Row>
           <Column style="margin: 0 1rem;">
             <InlineNotification
@@ -292,14 +306,25 @@
               lowContrast
               kind="info"
               title="Permissions required:"
-              subtitle="Please grant permission to send funds"
+              subtitle="Please grant cosigning permission to send funds."
             >
               <div slot="actions" on:click={() => requestPermissions()}>
-                <NotificationActionButton
-                  >Request Permissions</NotificationActionButton
-                >
+                <NotificationActionButton>
+                  Request Permissions
+                </NotificationActionButton>
               </div>
             </InlineNotification>
+          </Column>
+        </Row>
+      {:else if cosignPermission.error}
+        <Row>
+          <Column style="margin: 0 1rem;">
+            <InlineNotification
+              lowContrast
+              kind="error"
+              title="Permission request failed:"
+              subtitle={cosignPermission.errorMessage}
+            />
           </Column>
         </Row>
       {/if}
@@ -372,7 +397,7 @@
                       <Column>
                         <TextInput
                           labelText="Destination"
-                          disabled={!validCosignPermission}
+                          disabled={!cosignPermission.valid}
                           bind:value={destinationAddress}
                         />
                       </Column>
@@ -382,13 +407,13 @@
                           min={0.01}
                           step={0.01}
                           invalidText="Minimum amount is 0.01"
-                          disabled={!validCosignPermission}
+                          disabled={!cosignPermission.valid}
                           bind:value={sendAmount}
                         />
                       </Column>
                     </Row>
                   </FormGroup>
-                  <Button type="submit" disabled={!validCosignPermission}>
+                  <Button type="submit" disabled={!cosignPermission.valid}>
                     Send Funds
                   </Button>
                 </Form>
@@ -448,11 +473,11 @@
                       min={0.01}
                       step={0.01}
                       invalidText="Minimum amount is 0.01"
-                      disabled={!validCosignPermission}
+                      disabled={!cosignPermission.valid}
                       bind:value={sendProviderAmount}
                     />
                   </FormGroup>
-                  <Button type="submit" disabled={!validCosignPermission}>
+                  <Button type="submit" disabled={!cosignPermission.valid}>
                     Send Funds
                   </Button>
                 </Form>
