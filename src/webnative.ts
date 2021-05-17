@@ -28,8 +28,8 @@ export const sessionStore: Writable<Session> =
     error: false
   });
 
-export const walletStore: Writable<Wallet | undefined> =
-  writable(undefined);
+export const walletStore: Writable<Wallet | null> =
+  writable(null);
 
 let state: webnative.State;
 

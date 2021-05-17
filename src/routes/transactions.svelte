@@ -20,11 +20,8 @@
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
 
-  import {
-    Wallet,
-    Receipt,
-    MessageStatus,
-  } from 'webnative-filecoin';
+  import { MessageStatus, Receipt, Wallet } from 'webnative-filecoin';
+  import { ellipse, formatDate } from '../utils';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -40,7 +37,7 @@
     loading: true,
     error: false
   };
-  let wallet: Wallet | undefined;
+  let wallet: Wallet | null;
   let cosignPermission = {
     valid: false,
     error: false,
@@ -55,6 +52,7 @@
   let requestPermissions: VoidFunction = () => {};
 
   let cardAspectRatio: AspectRatioProps['ratio'];
+
   /**
    * Transactions. We keep track of transactions and transaction status.
    * Transactions are displayed in a table with headers that can reasonably
@@ -95,6 +93,36 @@
     }
   }
 
+  function updateTransactions(receipt: Receipt) {
+    transactions = [
+      ...transactions,
+      {
+        id: receipt.time.toString(),
+        date: formatDate(receipt.time),
+        destination: receipt.to,
+        amount: String(receipt.amount),
+        messageId: receipt.messageId
+      }
+    ];
+  }
+
+  $: {
+    const receipts = wallet?.getPrevReceipts();
+    if (transactions.length === 0) {
+      receipts?.forEach(receipt => {
+        updateTransactions(receipt);
+      });
+    }
+  }
+
+  /**
+   * Transaction form initialization for form fields and
+   * status used to display error messages.
+   */
+  let destinationAddress = '';
+  let sendAmount: number = 1;
+  let sendProviderAmount: number = 1;
+
   let transactionStatus: TransactionStatus = {
     status: null,
     message: ''
@@ -105,64 +133,10 @@
     message: ''
   };
 
-  setCardAspectRatio();
-
-  $: {
-    const receipts = wallet?.getPrevReceipts();
-    if (transactions.length === 0) {
-      receipts?.forEach(receipt => {
-        transactions = [
-          ...transactions,
-          {
-            id: receipt.time.toString(),
-            date: formatDate(receipt.time),
-            destination: receipt.to,
-            amount: String(receipt.amount),
-            messageId: receipt.messageId
-          }
-        ];
-      });
-    }
-  }
-
-  function ellipse(str: string): string {
-    let ellipsedString = '';
-
-    if (process.browser) {
-      if (window.innerWidth < 672) {
-        const leading = str.slice(0, 6);
-        const trailing = str.slice(-4);
-        ellipsedString = leading + '...' + trailing;
-      } else if (window.innerWidth < 1056) {
-        const leading = str.slice(0, 10);
-        const trailing = str.slice(-6);
-        ellipsedString = leading + '...' + trailing;
-      } else if (str.length > 62) {
-        const leading = str.slice(0, 42);
-        const trailing = str.slice(-18);
-        ellipsedString = leading + '...' + trailing;
-      } else {
-        return str;
-      }
-    }
-    return ellipsedString;
-  }
-
-  function formatDate(timestamp: number): string {
-    const date: Date = new Date(+timestamp);
-    const lang: string = navigator.language;
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      dateStyle: 'long',
-      timeStyle: 'short'
-    };
-
-    const formattedDate: string = new Intl.DateTimeFormat(
-      lang,
-      formatOptions
-    ).format(date);
-    return formattedDate;
-  }
-
+  /** Card aspect ratio. Set the aspect ratio depending on the
+   * window size of the device. We also listen for window changes
+   * and update when needed.
+   */
   function setCardAspectRatio() {
     if (process.browser) {
       if (window.innerWidth > 1312) {
@@ -174,6 +148,8 @@
       }
     }
   }
+
+  setCardAspectRatio();
 
   onMount(async () => {
     const { sessionStore, walletStore } = await import('../webnative');
@@ -187,16 +163,18 @@
 
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
+
+      // Check for cosigning permission and listen for expiration.
       if (wallet?.ucan) {
         cosignPermission.valid = true;
-        wallet.onExpire(() => cosignPermission.valid = false);
+        wallet.onExpire(() => (cosignPermission.valid = false));
       } else {
         cosignPermission.valid = false;
       }
     });
 
     sendFunds = async () => {
-      if (wallet !== undefined) {
+      if (wallet) {
         transactionStatus = {
           status: 'in-progress',
           message: ' Sending funds'
@@ -222,7 +200,7 @@
     };
 
     sendProviderFunds = async () => {
-      if (wallet !== undefined) {
+      if (wallet) {
         providerTransactionStatus = {
           status: 'in-progress',
           message: ' Sending funds to Lotus Provider'
@@ -247,19 +225,6 @@
       }
     };
 
-    function updateTransactions(receipt: Receipt) {
-      transactions = [
-        ...transactions,
-        {
-          id: receipt.time.toString(),
-          date: formatDate(receipt.time),
-          destination: receipt.to,
-          amount: String(receipt.amount),
-          messageId: receipt.messageId
-        }
-      ];
-    }
-
     refreshBalance = async () => {
       walletStore.update(wallet => wallet);
     };
@@ -283,10 +248,6 @@
     unsubscribeSession();
     unsubscribeWallet();
   });
-
-  let destinationAddress = '';
-  let sendAmount: number = 1;
-  let sendProviderAmount: number = 1;
 </script>
 
 <svelte:window on:resize={setCardAspectRatio} />
@@ -333,7 +294,7 @@
           <Row>
             <Column>
               <div class="balance">
-                {#if wallet !== undefined}
+                {#if wallet}
                   {#await wallet?.getBalance() then balance}
                     <h1 class="balance-value">{balance}</h1>
                   {:catch}
@@ -374,7 +335,7 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
-                {#if wallet !== undefined}
+                {#if wallet}
                   <CodeSnippet
                     wrapText
                     type="multi"
@@ -432,7 +393,7 @@
           <Row>
             <Column>
               <div class="balance">
-                {#if wallet !== undefined}
+                {#if wallet}
                   {#await wallet?.getProviderBalance() then providerBalance}
                     <h1 class="balance-value">{providerBalance}</h1>
                   {:catch}
