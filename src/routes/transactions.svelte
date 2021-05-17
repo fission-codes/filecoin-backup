@@ -374,7 +374,7 @@
                       </Column>
                     </Row>
                   </FormGroup>
-                  <Button type="submit" disabled={!cosignPermission.valid}>
+                  <Button type="submit" disabled={!cosignPermission.valid || destinationAddress.length === 0}>
                     Send Funds
                   </Button>
                 </Form>
