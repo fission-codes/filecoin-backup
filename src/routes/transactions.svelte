@@ -462,7 +462,7 @@
       {#if transactions.length > 0}
         <div class="transactions">
           <h2>Transactions</h2>
-          <DataTable headers={transactionHeaders} rows={transactions}>
+          <DataTable sortable headers={transactionHeaders} rows={transactions}>
             <span slot="cell" let:row let:cell>
               {#if cell.key === 'messageId'}
                 <Link
