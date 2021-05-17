@@ -2940,10 +2940,10 @@
   optionalDependencies:
     "@zxing/text-encoding" "0.9.0"
 
-"webnative-filecoin@0.6.6":
-  "integrity" "sha512-Eo5ePwdXYBgALliCQdxqNi3pdJ1Z4MFLwhwXGrV31JZndXEsO9lDEwFLQL15USh2PbxUGw/g2OY1eHbO2lQ89g=="
-  "resolved" "https://registry.npmjs.org/webnative-filecoin/-/webnative-filecoin-0.6.6.tgz"
-  "version" "0.6.6"
+"webnative-filecoin@0.6.7":
+  "integrity" "sha512-/pekUT2QvgO1UnN0qq6uD1ToZmv2XYYeJyw/gmpFI8wbe8MlCzsdHAgJ2UDsZFPLfbhoLXvatF1e9XCYAk1WoA=="
+  "resolved" "https://registry.npmjs.org/webnative-filecoin/-/webnative-filecoin-0.6.7.tgz"
+  "version" "0.6.7"
   dependencies:
     "@glif/filecoin-address" "^1.1.0-beta.18"
     "@types/lodash" "^4.14.168"
