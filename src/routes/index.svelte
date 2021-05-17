@@ -8,6 +8,8 @@
     Loading
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
+  import type { Post } from '../feed';
+  import { getPosts } from '../feed';
   import { goto } from '@sapper/app';
 
   /**
@@ -33,6 +35,8 @@
   let login: VoidFunction;
   let unsubscribe: VoidFunction = () => {};
 
+  let postsPromise: Promise<Post[]>;
+
   onMount(async () => {
     const { redirectToLobby, sessionStore } = await import('../webnative');
     login = redirectToLobby;
@@ -40,6 +44,8 @@
     unsubscribe = sessionStore.subscribe(val => {
       session = val;
     });
+
+    postsPromise = getPosts();
   });
 
   onDestroy(unsubscribe);
@@ -114,7 +120,16 @@
     >
       <div class="card">
         <h2>Community</h2>
-        <p>Community links will go here.</p>
+        <p>Read the latest Filecoin posts on the Fission forums.</p>
+        {#await postsPromise then posts}
+          {#each posts as post}
+            <a href={post.url} target="_blank">
+              {post.title}
+            </a>
+          {/each}
+        {:catch error}
+          {error.message}
+        {/await}
       </div>
     </Column>
   </Row>

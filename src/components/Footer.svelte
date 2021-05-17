@@ -23,7 +23,10 @@
           >
             <Icon render={LogoGithub32} style="fill: var(--cds-icon-01)" />
           </Link>
-          <Link href="https://talk.fission.codes/tag/filecoin" target="_blank">
+          <Link
+            href="https://talk.fission.codes/c/projects/webnative-filecoin-integration/48"
+            target="_blank"
+          >
             <Icon render={Chat32} style="fill: var(--cds-icon-01)" />
           </Link>
         </div>
