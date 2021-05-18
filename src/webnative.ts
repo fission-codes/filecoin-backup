@@ -4,13 +4,6 @@ import { Wallet } from 'webnative-filecoin';
 import { writable, Writable } from 'svelte/store';
 
 
-webnative.setup.debug({ enabled: true });
-webnative.setup.endpoints({
-  api: "https://runfission.net",
-  lobby: "http://localhost:8001",
-  user: "fissionuser.net"
-});
-
 export type Session = {
   username: string;
   errorMessage: string;
