@@ -15,7 +15,8 @@
     "polka": "next",
     "sirv": "^1.0.0",
     "svelte-seo": "^1.1.0",
-    "webnative": "^0.21.4"
+    "webnative": "0.24.2-alpha-2",
+    "webnative-filecoin": "0.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -33,7 +34,7 @@
     "@types/compression": "^1.7.0",
     "@types/node": "^14.11.1",
     "@types/polka": "^0.5.1",
-    "carbon-components-svelte": "^0.29.2",
+    "carbon-components-svelte": "^0.30.0",
     "rollup": "^2.3.4",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",

@@ -7,7 +7,7 @@
     HeaderNavItem
   } from 'carbon-components-svelte';
   import { getContext, onMount, onDestroy } from 'svelte';
-  import type Wallet from '../../webnative-filecoin/src/wallet';
+  import { Wallet } from 'webnative-filecoin';
 
   /**
    * Carbon theme initialization.
@@ -39,7 +39,7 @@
     loading: true,
     error: false
   };
-  let wallet: Wallet | undefined;
+  let wallet: Wallet | null;
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
@@ -77,7 +77,7 @@
           <img class="logo" src="/icon.png" alt="Fission username" />
           <span>{session.username}</span>
         </div>
-        {#if wallet !== undefined}
+        {#if wallet}
           <div class="filecoin-indicator">
             {#await wallet?.getBalance() then balance}
               <img

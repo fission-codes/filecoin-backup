@@ -6,18 +6,23 @@
     DataTable,
     Form,
     FormGroup,
+    InlineNotification,
     Link,
     Loading,
+    NotificationActionButton,
     NumberInput,
     Row,
     TextInput
   } from 'carbon-components-svelte';
   import Launch16 from 'carbon-icons-svelte/lib/Launch16';
+  import Help16 from 'carbon-icons-svelte/lib/Help16';
+  import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '@sapper/app';
   import copy from 'clipboard-copy';
-  import type Wallet from '../../webnative-filecoin/src/wallet';
-  import type { Receipt } from '../../webnative-filecoin/src/wallet';
+
+  import { MessageStatus, Receipt, Wallet } from 'webnative-filecoin';
+  import { ellipse, formatDate } from '../utils';
 
   /**
    * Webnative initialization. In order to avoid running webnative on the
@@ -33,12 +38,21 @@
     loading: true,
     error: false
   };
-  let wallet: Wallet | undefined;
+  let wallet: Wallet | null;
+  let cosignPermission = {
+    valid: false,
+    error: false,
+    errorMessage: ''
+  };
 
   let unsubscribeSession: VoidFunction = () => {};
   let unsubscribeWallet: VoidFunction = () => {};
   let sendFunds: VoidFunction = () => {};
   let sendProviderFunds: VoidFunction = () => {};
+  let refreshBalance: VoidFunction = () => {};
+  let requestPermissions: VoidFunction = () => {};
+
+  let cardAspectRatio: AspectRatioProps['ratio'];
 
   /**
    * Transactions. We keep track of transactions and transaction status.
@@ -80,6 +94,36 @@
     }
   }
 
+  function updateTransactions(receipt: Receipt) {
+    transactions = [
+      ...transactions,
+      {
+        id: receipt.time.toString(),
+        date: formatDate(receipt.time),
+        destination: receipt.to,
+        amount: String(receipt.amount),
+        messageId: receipt.messageId
+      }
+    ];
+  }
+
+  $: {
+    const receipts = wallet?.getPrevReceipts();
+    if (transactions.length === 0) {
+      receipts?.forEach(receipt => {
+        updateTransactions(receipt);
+      });
+    }
+  }
+
+  /**
+   * Transaction form initialization for form fields and
+   * status used to display error messages.
+   */
+  let destinationAddress = '';
+  let sendAmount: number = 1;
+  let sendProviderAmount: number = 1;
+
   let transactionStatus: TransactionStatus = {
     status: null,
     message: ''
@@ -90,43 +134,23 @@
     message: ''
   };
 
-  function ellipse(str: string): string {
-    let ellipsedString = '';
-
+  /** Card aspect ratio. Set the aspect ratio depending on the
+   * window size of the device. We also listen for window changes
+   * and update when needed.
+   */
+  function setCardAspectRatio() {
     if (process.browser) {
-      if (window.innerWidth < 672) {
-        const leading = str.slice(0, 6);
-        const trailing = str.slice(-4);
-        ellipsedString = leading + '...' + trailing;
-      } else if (window.innerWidth < 1056) {
-        const leading = str.slice(0, 10);
-        const trailing = str.slice(-6);
-        ellipsedString = leading + '...' + trailing;
-      } else if (str.length > 62) {
-        const leading = str.slice(0, 42);
-        const trailing = str.slice(-18);
-        ellipsedString = leading + '...' + trailing;
+      if (window.innerWidth > 1312) {
+        cardAspectRatio = '1x1';
+      } else if (window.innerWidth > 1055) {
+        cardAspectRatio = '3x4';
       } else {
-        return str;
+        cardAspectRatio = '4x3';
       }
     }
-    return ellipsedString;
   }
 
-  function formatDate(timestamp: number): string {
-    const date: Date = new Date(timestamp);
-    const lang: string = navigator.language;
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      dateStyle: 'long',
-      timeStyle: 'short'
-    };
-
-    const formattedDate: string = new Intl.DateTimeFormat(
-      lang,
-      formatOptions
-    ).format(date);
-    return formattedDate;
-  }
+  setCardAspectRatio();
 
   onMount(async () => {
     const { sessionStore, walletStore } = await import('../webnative');
@@ -140,33 +164,25 @@
 
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
+
+      // Check for cosigning permission and listen for expiration.
+      if (wallet?.ucan) {
+        cosignPermission.valid = true;
+        wallet.onExpire(() => (cosignPermission.valid = false));
+      } else {
+        cosignPermission.valid = false;
+      }
     });
 
-    if (wallet !== undefined) {
-      wallet.getPrevReceipts().then(receipts => {
-        receipts.forEach(receipt => {
-          transactions = [
-            ...transactions,
-            {
-              id: String(receipt.blockheight + new Date().getTime()),
-              date: formatDate(receipt.time),
-              destination: receipt.to,
-              amount: String(receipt.amount),
-              messageId: receipt.messageId
-            }
-          ];
-        });
-      });
-    }
-
     sendFunds = async () => {
-      if (wallet !== undefined) {
+      if (wallet) {
         transactionStatus = {
           status: 'in-progress',
           message: ' Sending funds'
         };
+        const receipt = await wallet.send(destinationAddress, sendAmount);
         wallet
-          .send(destinationAddress, sendAmount)
+          .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             transactionStatus = {
@@ -185,13 +201,14 @@
     };
 
     sendProviderFunds = async () => {
-      if (wallet !== undefined) {
+      if (wallet) {
         providerTransactionStatus = {
           status: 'in-progress',
           message: ' Sending funds to Lotus Provider'
         };
+        const receipt = await wallet.fundProvider(sendProviderAmount);
         wallet
-          .fundProvider(sendProviderAmount)
+          .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
             walletStore.update(wallet => wallet);
             providerTransactionStatus = {
@@ -209,29 +226,32 @@
       }
     };
 
-    function updateTransactions(receipt: Receipt) {
-      transactions = [
-        ...transactions,
-        {
-          id: String(receipt.blockheight + new Date().getTime()),
-          date: formatDate(receipt.time),
-          destination: receipt.to,
-          amount: String(receipt.amount),
-          messageId: receipt.messageId
-        }
-      ];
-    }
+    refreshBalance = async () => {
+      walletStore.update(wallet => wallet);
+    };
+
+    requestPermissions = async () => {
+      if (wallet) {
+        wallet
+          .requestPermissions()
+          .then(() => {
+            cosignPermission.valid = true;
+          })
+          .catch(err => {
+            cosignPermission.error = true;
+            cosignPermission.errorMessage = err.data;
+          });
+      }
+    };
   });
 
   onDestroy(() => {
     unsubscribeSession();
     unsubscribeWallet();
   });
-
-  let destinationAddress = '';
-  let sendAmount: number = 1;
-  let sendProviderAmount: number = 1;
 </script>
+
+<svelte:window on:resize={setCardAspectRatio} />
 
 {#if session.loading}
   <div class="loading">
@@ -240,12 +260,51 @@
 {:else if session.authed}
   <Row>
     <Column padding>
+      {#if !cosignPermission.valid && !cosignPermission.error}
+        <Row>
+          <Column style="margin: 0 1rem;">
+            <InlineNotification
+              hideCloseButton
+              lowContrast
+              kind="info"
+              title="Permissions required:"
+              subtitle="Please grant cosigning permission to send funds."
+            >
+              <Link
+                target="_blank"
+                style="color: #666; padding: 0 2px"
+                href="https://talk.fission.codes/t/filecoin-backup-faq/1901"
+              >
+                <Help16>
+                  <title>More information on cosigning permissions</title>
+                </Help16>
+              </Link>
+              <div slot="actions" on:click={() => requestPermissions()}>
+                <NotificationActionButton>
+                  Request Permissions
+                </NotificationActionButton>
+              </div>
+            </InlineNotification>
+          </Column>
+        </Row>
+      {:else if cosignPermission.error}
+        <Row>
+          <Column style="margin: 0 1rem;">
+            <InlineNotification
+              lowContrast
+              kind="error"
+              title="Permission request failed:"
+              subtitle={cosignPermission.errorMessage}
+            />
+          </Column>
+        </Row>
+      {/if}
       <Row>
         <Column sm={4} md={8} lg={8}>
           <Row>
             <Column>
               <div class="balance">
-                {#if wallet !== undefined}
+                {#if wallet}
                   {#await wallet?.getBalance() then balance}
                     <h1 class="balance-value">{balance}</h1>
                   {:catch}
@@ -266,7 +325,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="4x3"
+              aspectRatio={cardAspectRatio}
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
@@ -286,7 +345,7 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
-                {#if wallet !== undefined}
+                {#if wallet}
                   <CodeSnippet
                     wrapText
                     type="multi"
@@ -294,6 +353,13 @@
                     on:click={() => copy(wallet?.getAddress() || '')}
                   />
                 {/if}
+                <Button
+                  size="small"
+                  kind="tertiary"
+                  on:click={() => refreshBalance()}
+                >
+                  Refresh Balance
+                </Button>
                 <h4>Send Funds</h4>
                 <p>Enter a destination address and an amount of FIL to send.</p>
                 <Form on:submit={sendFunds}>
@@ -302,6 +368,7 @@
                       <Column>
                         <TextInput
                           labelText="Destination"
+                          disabled={!cosignPermission.valid}
                           bind:value={destinationAddress}
                         />
                       </Column>
@@ -309,14 +376,24 @@
                         <NumberInput
                           label="Amount"
                           min={0.01}
+                          max={1000}
                           step={0.01}
-                          invalidText="Minimum amount is 0.01"
+                          invalidText="Amount must be between 0.01 and 1000"
+                          disabled={!cosignPermission.valid}
                           bind:value={sendAmount}
                         />
                       </Column>
                     </Row>
                   </FormGroup>
-                  <Button type="submit">Send Funds</Button>
+                  <Button
+                    type="submit"
+                    disabled={!cosignPermission.valid ||
+                      destinationAddress.length === 0 ||
+                      sendAmount < 0.01 ||
+                      sendAmount > 1000}
+                  >
+                    Send Funds
+                  </Button>
                 </Form>
                 {#if transactionStatus.status === 'in-progress'}
                   <span class="sending-funds">
@@ -333,7 +410,7 @@
           <Row>
             <Column>
               <div class="balance">
-                {#if wallet !== undefined}
+                {#if wallet}
                   {#await wallet?.getProviderBalance() then providerBalance}
                     <h1 class="balance-value">{providerBalance}</h1>
                   {:catch}
@@ -354,7 +431,7 @@
           <Row>
             <Column
               padding
-              aspectRatio="4x3"
+              aspectRatio={cardAspectRatio}
               style="border: 2px solid #aaa; border-radius: 4px; margin: 2rem"
             >
               <div class="card">
@@ -372,12 +449,21 @@
                     <NumberInput
                       label="Amount"
                       min={0.01}
+                      max={1000}
                       step={0.01}
-                      invalidText="Minimum amount is 0.01"
+                      invalidText="Amount must be between 0.01 and 1000"
+                      disabled={!cosignPermission.valid}
                       bind:value={sendProviderAmount}
                     />
                   </FormGroup>
-                  <Button type="submit">Send Funds</Button>
+                  <Button
+                    type="submit"
+                    disabled={!cosignPermission.valid ||
+                      sendProviderAmount < 0.01 ||
+                      sendProviderAmount > 1000}
+                  >
+                    Send Funds
+                  </Button>
                 </Form>
                 {#if providerTransactionStatus.status === 'in-progress'}
                   <span class="sending-funds">
@@ -393,12 +479,13 @@
       </Row>
     </Column>
   </Row>
+
   <Row>
     <Column padding style="margin: 1rem;">
       {#if transactions.length > 0}
         <div class="transactions">
           <h2>Transactions</h2>
-          <DataTable headers={transactionHeaders} rows={transactions}>
+          <DataTable sortable headers={transactionHeaders} rows={transactions}>
             <span slot="cell" let:row let:cell>
               {#if cell.key === 'messageId'}
                 <Link
@@ -443,6 +530,7 @@
   }
 
   .balance-value {
+    height: 100px;
     font-size: 82px;
   }
 

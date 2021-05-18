@@ -1,6 +1,6 @@
 import * as webnative from 'webnative';
-import * as filecoin from '../webnative-filecoin/src/index';
-import type Wallet from '../webnative-filecoin/src/wallet';
+import * as filecoin from 'webnative-filecoin';
+import { Wallet } from 'webnative-filecoin';
 import { writable, Writable } from 'svelte/store';
 
 
@@ -21,8 +21,8 @@ export const sessionStore: Writable<Session> =
     error: false
   });
 
-export const walletStore: Writable<Wallet | undefined> =
-  writable(undefined);
+export const walletStore: Writable<Wallet | null> =
+  writable(null);
 
 let state: webnative.State;
 
@@ -31,6 +31,9 @@ const fissionInit = {
     app: {
       name: "filecoin-backup",
       creator: "bgins"
+    },
+    fs: {
+      private: [filecoin.DEFAULT_KEY_PERMISSION]
     }
   }
 }
@@ -62,7 +65,7 @@ export async function initialize() {
         });
 
         if (state.fs) {
-          const wallet = await filecoin.getWallet(state.fs)
+          const wallet = await filecoin.getWallet(state.fs, webnative);
           walletStore.set(wallet);
         }
         break;
@@ -95,4 +98,3 @@ export async function initialize() {
 export function redirectToLobby() {
   webnative.redirectToLobby(state.permissions);
 }
-
