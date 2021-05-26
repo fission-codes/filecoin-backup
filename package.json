@@ -2,18 +2,15 @@
   "name": "filecoin-backup",
   "description": "A backup app for storing files with webnative and filecoin",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "dev": "sapper dev",
-    "build": "sapper build --legacy",
-    "export": "sapper export --legacy",
-    "start": "node __sapper__/build",
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview",
     "validate": "svelte-check --ignore src/node_modules/@sapper"
   },
   "dependencies": {
     "clipboard-copy": "^4.0.1",
-    "compression": "^1.7.1",
-    "polka": "next",
-    "sirv": "^1.0.0",
     "svelte-seo": "^1.1.0",
     "webnative": "0.24.2-alpha-2",
     "webnative-filecoin": "0.6.7"
@@ -27,9 +24,10 @@
     "@rollup/plugin-babel": "^5.0.0",
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
-    "@rollup/plugin-replace": "^2.2.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@rollup/plugin-url": "^5.0.0",
+    "@sveltejs/adapter-static": "^1.0.0-next.11",
+    "@sveltejs/kit": "^1.0.0-next.109",
     "@tsconfig/svelte": "^1.0.10",
     "@types/compression": "^1.7.0",
     "@types/node": "^14.11.1",
@@ -38,11 +36,11 @@
     "rollup": "^2.3.4",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
-    "sapper": "^0.28.0",
     "svelte": "^3.34.0",
     "svelte-check": "^1.0.46",
     "svelte-preprocess": "^4.3.0",
     "tslib": "^2.0.1",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "vite": "^2.3.4"
   }
 }

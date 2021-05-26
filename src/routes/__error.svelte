@@ -1,10 +1,17 @@
+<script context="module">
+  export function load({ error, status }) {
+		return {
+			props: { error, status }
+		}
+	}
+</script>
+
 <script lang="ts">
   export let status: number;
   export let error: { message: any; stack: any };
 
   import { Row, Column, Link } from 'carbon-components-svelte';
-
-  const dev = process.env.NODE_ENV === 'development';
+  import { dev } from '$app/env';
 </script>
 
 <Row>

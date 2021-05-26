@@ -10,7 +10,7 @@
   import { getContext, onMount, onDestroy } from 'svelte';
   import type { Post } from '../feed';
   import { getPosts } from '../feed';
-  import { goto } from '@sapper/app';
+  import { goto } from '$app/navigation';
 
   /**
    * Carbon theme initialization.

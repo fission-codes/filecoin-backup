@@ -1,7 +1,9 @@
+import { browser } from '$app/env';
+
 export function ellipse(str: string): string {
   let ellipsedString = '';
 
-  if (process.browser) {
+  if (browser) {
     if (window.innerWidth < 672) {
       const leading = str.slice(0, 6);
       const trailing = str.slice(-4);

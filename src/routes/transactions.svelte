@@ -18,7 +18,8 @@
   import Help16 from 'carbon-icons-svelte/lib/Help16';
   import type { AspectRatioProps } from 'carbon-components-svelte/types/AspectRatio/AspectRatio';
   import { onMount, onDestroy } from 'svelte';
-  import { goto } from '@sapper/app';
+  import { browser } from '$app/env';
+  import { goto } from '$app/navigation';
   import copy from 'clipboard-copy';
 
   import { MessageStatus, Receipt, Wallet } from 'webnative-filecoin';
@@ -84,7 +85,7 @@
     { key: 'messageId', value: 'Message ID' }
   ];
 
-  if (process.browser) {
+  if (browser) {
     if (window.innerWidth < 672) {
       transactionHeaders = [
         { key: 'date', value: 'Date' },
@@ -139,7 +140,7 @@
    * and update when needed.
    */
   function setCardAspectRatio() {
-    if (process.browser) {
+    if (browser) {
       if (window.innerWidth > 1312) {
         cardAspectRatio = '1x1';
       } else if (window.innerWidth > 1055) {
