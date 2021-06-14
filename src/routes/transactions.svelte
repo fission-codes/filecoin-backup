@@ -165,9 +165,11 @@
     unsubscribeWallet = walletStore.subscribe(val => {
       wallet = val;
 
-      // Check for cosigning permission and listen for expiration.
+      // Check for cosigning permission when subscribing to the wallet
       if (wallet?.ucan) {
         cosignPermission.valid = true;
+
+        // Pass a callback to invalidate the permission on expiration
         wallet.onExpire(() => (cosignPermission.valid = false));
       } else {
         cosignPermission.valid = false;
@@ -180,10 +182,18 @@
           status: 'in-progress',
           message: ' Sending funds'
         };
+
+        // Send funds. webnative-filecoin provides a receipt when the
+        // transaction is initiated.
         const receipt = await wallet.send(destinationAddress, sendAmount);
+
+        // Wait for the receipt to be updated. MessageStatus indicates the
+        // number of blocks on chain: Sent = 0, Partial = 1, Verified = 2
         wallet
           .waitForReceipt(receipt.messageId, MessageStatus.Partial)
           .then(async (receipt: Receipt) => {
+
+            // Update the wallet store with the latest wallet state.
             walletStore.update(wallet => wallet);
             transactionStatus = {
               status: 'complete',
@@ -227,11 +237,15 @@
     };
 
     refreshBalance = async () => {
+      // Update the wallet store with the latest wallet state.
       walletStore.update(wallet => wallet);
     };
 
     requestPermissions = async () => {
       if (wallet) {
+        // Request cosigning permissions for one hour and up
+        // to 1000 FIL. These values cannot be changed in this
+        // iteration of webnative-filecoin.
         wallet
           .requestPermissions()
           .then(() => {
@@ -304,6 +318,7 @@
           <Row>
             <Column>
               <div class="balance">
+                <!-- Get the wallet balance and display it. -->
                 {#if wallet}
                   {#await wallet?.getBalance() then balance}
                     <h1 class="balance-value">{balance}</h1>
@@ -345,6 +360,7 @@
                   </a>
                   to deposit FIL to your wallet.
                 </p>
+                <!-- Get the wallet address and display it. -->
                 {#if wallet}
                   <CodeSnippet
                     wrapText

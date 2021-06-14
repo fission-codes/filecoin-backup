@@ -33,6 +33,9 @@ const fissionInit = {
       creator: "bgins"
     },
     fs: {
+      // The cosigner key is stored in the private filesystem
+      // at the path Keychain/fil-cosigner. The key is created
+      // when the user signs in with Fission.
       private: [filecoin.DEFAULT_KEY_PERMISSION]
     }
   }
@@ -65,6 +68,9 @@ export async function initialize() {
         });
 
         if (state.fs) {
+          // The user has granted permission to use their filesystem and
+          // the fil-cosigner key. We can now request the wallet from
+          // webnative-filecoin.
           const wallet = await filecoin.getWallet(state.fs, webnative);
           walletStore.set(wallet);
         }
