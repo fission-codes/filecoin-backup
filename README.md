@@ -8,7 +8,7 @@
 [![Discord](https://img.shields.io/discord/478735028319158273.svg)](https://discord.gg/zAQBDEq)
 [![Discourse](https://img.shields.io/discourse/https/talk.fission.codes/topics)](https://talk.fission.codes)
 
-Filecoin Backup integrates Fission webnative and Filecoin to store your files in the browser and to the Filecoin.
+Filecoin Backup integrates Fission webnative and Filecoin to store your files in the browser and to Filecoin.
 
 [Try it out!](https://ancient-round-crab.fission.app/)
 
