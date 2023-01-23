@@ -1,12 +1,15 @@
-![](https://raw.githubusercontent.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472/images/badge-solid-colored.svg)
+<div align="center">
+  <img src="https://github.com/fission-codes/kit/blob/main/images/logo-icon-coloured.png?raw=true" width="100" />
 
-# Filecoin Backup
+  <h1>Filecoin Backup</h1>
 
 [![Build Status](https://github.com/fission-suite/filecoin-backup/workflows/Publish/badge.svg)](https://github.com/{user}/{repo}/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/fission-suite/blob/master/LICENSE)
 [![Built by FISSION](https://img.shields.io/badge/⌘-Built_by_FISSION-purple.svg)](https://fission.codes)
 [![Discord](https://img.shields.io/discord/478735028319158273.svg)](https://discord.gg/zAQBDEq)
 [![Discourse](https://img.shields.io/discourse/https/talk.fission.codes/topics)](https://talk.fission.codes)
+
+</div>
 
 Filecoin Backup integrates Fission webnative and Filecoin to store your files in the browser and to Filecoin.
 
